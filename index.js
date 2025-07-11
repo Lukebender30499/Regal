@@ -1,22 +1,37 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+
 const app = express();
-app.use(express.json());
+const port = process.env.PORT || 3000;
 
-const areaMap = {
-  "212": "New York",
-  "213": "Los Angeles",
-  "305": "Miami",
-  "312": "Chicago",
-  "415": "San Francisco",
-  "617": "Boston"
-};
+app.use(cors());
+app.use(bodyParser.json());
 
-app.post('/', (req, res) => {
-  const phone = req.body?.phoneNumber || "";
-  const areaCode = phone.slice(2, 5);
-  const city = areaMap[areaCode] || "your area";
-  res.json({ city });
+// Test route
+app.get('/', (req, res) => {
+  res.send('Hello from Express server!');
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+// Area code extraction endpoint
+app.post('/area-code', (req, res) => {
+  const phoneNumber = req.body.phoneNumber;
+
+  if (!phoneNumber || typeof phoneNumber !== 'string') {
+    return res.status(400).json({ error: 'Invalid or missing phoneNumber' });
+  }
+
+  const digits = phoneNumber.replace(/\D/g, ''); // remove non-digits
+
+  if (digits.length < 10) {
+    return res.status(400).json({ error: 'Phone number too short' });
+  }
+
+  const areaCode = digits.slice(-10, -7); // Get the area code from the last 10 digits
+
+  res.json({ areaCode });
+});
+
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
