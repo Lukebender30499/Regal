@@ -24,15 +24,15 @@ const areaCodeMap = {
   // Connecticut
   "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
 };
-
-app.post("/", (req, res) => {
-  app.use((req, res, next) => {
+app.use((req, res, next) => {
   let chunks = [];
   req.on("data", chunk => chunks.push(chunk));
   req.on("end",  () => {
     req.rawBody = Buffer.concat(chunks).toString();  // ← exact payload
     next();
   });
+app.post("/", (req, res) => {
+  
 });
   
   //const { areaCode } = JSON.parse(req.body);
