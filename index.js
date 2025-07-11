@@ -4,7 +4,11 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.text());
+app.use(express.text({ type: "*/*" }));   // raw string
+app.use((req, res, next) => {             // capture untouched body
+  req.rawBody = req.body;                 // body is already a string
+  next();
+});
 
 // area code → city map
 const areaCodeMap = {
@@ -24,19 +28,13 @@ const areaCodeMap = {
   // Connecticut
   "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
 };
-app.use((req, res, next) => {
-  let chunks = [];
-  req.on("data", chunk => chunks.push(chunk));
-  req.on("end",  () => {
-    req.rawBody = Buffer.concat(chunks).toString();  // ← exact payload
-    next();
-  });
+
 app.post("/", (req, res) => {
   
-});
+
   
   //const { areaCode } = JSON.parse(req.body);
-  const {areaCode} = "test";
+  let areaCode = "test";
 
 
   const city = areaCodeMap[areaCode] || "Unknown";
