@@ -26,7 +26,8 @@ const areaCodeMap = {
 };
 
 app.post("/get-city-time", (req, res) => {
-  const callerNumber = req.body?.call?.from_number || "";
+  console.log("CALL OBJECT:", JSON.stringify(req.body.call, null, 2));
+  const callerNumber = String(req.body?.call?.from_number || "")
   const areaCode = callerNumber.replace(/\D/g, "").slice(2, 5) || "000";
   const city = areaCodeMap[areaCode] || "Unknown";
   const now = new Date();
