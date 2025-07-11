@@ -34,8 +34,14 @@ app.post("/telnyx", express.json(), (req, res) => {
 
   if (ev?.data?.event_type !== "call.answered") return res.sendStatus(200);
 
+ const retellId = ev.data.payload.headers["X-Retell-Call-Id"]; // "call_abc123"
  const phone    = ev.data.payload.from;                        // "+12035550123"
- callerCache.set(phone);
+ if (typeof retellId === "string" && typeof phone === "string") {
+    callerCache.set(retellId, phone);
+    res.sendStatus(200);
+  } else {
+    res.status(400).json({ error: "Missing call ID or phone number" });
+  }
 
   res.sendStatus(200);
 });
@@ -43,7 +49,10 @@ app.post("/telnyx", express.json(), (req, res) => {
 
 app.post("/get-city-time", express.json(), (req, res) => {
   const id    = req.body.args.call_id;          // "call_abc123"
-  const phone = callerCache.get(phone) || "";      // "+12035550123" or ""
+   if (typeof id !== "string" && typeof id !== "number") {
+    return res.status(400).json({ error: "Missing or invalid call_id" }); }
+    
+  const phone = callerCache.get(id) || "";      // "+12035550123" or ""
   const areaCode  = phone.slice(2, 5) || "000";
 
   const city = areaCodeMap[areaCode] || "Unknown";
