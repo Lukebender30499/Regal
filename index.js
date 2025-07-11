@@ -39,10 +39,13 @@ console.log("Unicode breakdown:", [...areaCode].map(c => c.charCodeAt(0)));
 
   // Normalize
  // areaCode = areaCode?.toString().trim();
- if (typeof areaCode !== "string") {
+ if (!areaCode) {
+  areaCode = "";
+} else if (typeof areaCode !== "string") {
   areaCode = String(areaCode);
 }
-areaCode = areaCode.replace(/[^\d]/g, "");  // remove any non-digit characters
+areaCode = areaCode.replace(/[^\d]/g, "");
+
 if (!areaCode || !/^\d{3}$/.test(areaCode) || !areaCodeMap[areaCode]) {
   console.log("Invalid or unrecognized areaCode. Using fallback '000'");
   areaCode = "000";
