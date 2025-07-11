@@ -25,29 +25,19 @@ const areaCodeMap = {
   "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
 };
 
-app.post("/", (req, res) => {
-  
-
-  
-  //const { areaCode } = JSON.parse(req.body);
+app.post("/get-city-time", (req, res) => {
   let areaCode = String(req.body?.args?.areaCode || "")
                    .replace(/\D/g, "")
                    .slice(0, 3);
 
   if (areaCode.length !== 3) areaCode = "000";
-
-
   const city = areaCodeMap[areaCode] || "Unknown";
-
-  // Time logic
   const now = new Date();
   const estTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
   const hours = estTime.getHours();
   const minutes = estTime.getMinutes();
   const time = parseFloat((hours + minutes / 60).toFixed(2));
-
-  // Add areaCode to the return for debugging
-  res.json({ city, time, areaCode });
+  res.json({city, time});
 });
 
 
