@@ -31,37 +31,29 @@ const areaCodeMap = {
 };
 
 app.post("/telnyx", express.json(), async (req, res) => {
-  const e = req.body;
+  const ev = req.body;
 
-  /* we care only about the moment the call is answered */
-  if (e?.data?.event_type !== "call.answered") return res.sendStatus(200);
+  if (ev?.data?.event_type !== "call.answered") return res.sendStatus(200);
 
-  const from   = e.data.payload.from;             // "+12039930379"
-  const callId = e.data.payload.call_control_id;  // "v3:Fnk..."
+  const callId = ev.data.payload.call_control_id;  // Telnyx's unique ID
+  const from   = ev.data.payload.from;            // "+12035550123"
 
-  /* 1️⃣  keep a local copy (so any other route can use it fast) */
-  callerCache.set(callId, from);
-
-  /* 2️⃣  push it into Retell so the flow can reference {{caller_number}} */
-  try {
-    await axios.post(
-      `https://api.retellai.com/v1/calls/${callId}/variables`,
-      { key: "caller_number", value: from },
-      { headers: { Authorization: `Bearer ${process.env.RETELL_API_KEY}` } }
-    );
-    console.log(`[telnyx] stored caller_number for ${callId}: ${from}`);
-  } catch (err) {
-    console.error("Retell variable API failed:", err.response?.data || err);
-  }
+  // Push a Retell variable.  This is the only outbound call you need.
+  await axios.post(
+    `https://api.retellai.com/v1/calls/${callId}/variables`,
+    { key: "caller_number", value: from },
+    { headers: { Authorization: `Bearer ${process.env.RETELL_API_KEY}` } }
+  );
 
   res.sendStatus(200);
 });
 
 
-app.post("/get-city-time", (req, res) => {
-  const phone = req.body.args.caller_number;  // defined because webhook stored it
-  const areaCode = phone ? phone.slice(2, 5) : "000";
-  const city = areaCodeMap[areaCode] || "Unknown";
+app.post("/city_and_time", express.json(), (req, res) => {
+  const phone = req.body.args.caller_number;  // "+12035550123"
+  const areaCode  = phone.slice(2, 5);            // "203"
+
+  const city = areaCodeMap[area] || "Unknown";
   const now = new Date();
   const estTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
   const hours = estTime.getHours();
