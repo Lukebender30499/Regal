@@ -27,7 +27,7 @@ const areaCodeMap = {
 
 app.post("/get-city-time", (req, res) => {
   const callerNumber = req.body?.call?.from_number || "";
-  const areaCode = callerNumber.replace(/\D/g, "").slice(0, 3) || "000";
+  const areaCode = callerNumber.replace(/\D/g, "").slice(1, 4) || "000";
   const city = areaCodeMap[areaCode] || "Unknown";
   const now = new Date();
   const estTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
