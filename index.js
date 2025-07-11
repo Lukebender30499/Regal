@@ -31,7 +31,11 @@ app.post("/", (req, res) => {
   let areaCode = req.body?.areaCode;
 
   console.log("Raw request body:", req.body);
-  console.log("Received areaCode:", areaCode);
+ console.log("Received areaCode (raw):", areaCode);
+console.log("Unicode breakdown:", [...areaCode].map(c => c.charCodeAt(0)));
+
+console.log("Unicode breakdown:", [...areaCode].map(c => c.charCodeAt(0)));
+
   console.log("Type of areaCode:", typeof areaCode);
 
   // Normalize
@@ -40,6 +44,10 @@ app.post("/", (req, res) => {
   areaCode = String(areaCode);
 }
 areaCode = areaCode.replace(/[^\d]/g, "");  // remove any non-digit characters
+if (!areaCode || !/^\d{3}$/.test(areaCode) || !areaCodeMap[areaCode]) {
+  console.log("Invalid or unrecognized areaCode. Using fallback '000'");
+  areaCode = "000";
+}
 console.log("Normalized areaCode:", areaCode);
 
 
