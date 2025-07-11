@@ -26,31 +26,34 @@ const areaCodeMap = {
 };
 
 app.post("/", (req, res) => {
-  let areaCode = req.body.areaCode;
+  let areaCode = req.body?.areaCode;
 
-  console.log("Incoming request with areaCode:", areaCode);
-  console.log("Type:", typeof areaCode);
+  console.log("Raw request body:", req.body);
+  console.log("Received areaCode:", areaCode);
+  console.log("Type of areaCode:", typeof areaCode);
 
-  // Normalize: ensure string and trim whitespace
+  // Normalize
   areaCode = areaCode?.toString().trim();
 
-  // Fallback to "000" if not a valid 3-digit area code
+  // Validate
   if (!areaCode || !/^\d{3}$/.test(areaCode)) {
-    console.log("Invalid areaCode received. Falling back to '000'.");
+    console.log("Invalid areaCode. Using fallback '000'");
     areaCode = "000";
   }
 
   const city = areaCodeMap[areaCode] || "Unknown";
 
-  // Time logic (rounded to 2 decimal places)
+  // Time logic
   const now = new Date();
   const estTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
   const hours = estTime.getHours();
   const minutes = estTime.getMinutes();
   const time = parseFloat((hours + minutes / 60).toFixed(2));
 
-  return res.json({ city, time });
+  // Add areaCode to the return for debugging
+  return res.json({ city, time, areaCode });
 });
+
 
 
 app.listen(port, () => {
