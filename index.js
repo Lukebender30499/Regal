@@ -4,11 +4,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.text({ type: "*/*" }));   // raw string
-app.use((req, res, next) => {             // capture untouched body
-  req.rawBody = req.body;                 // body is already a string
-  next();
-});
+app.use(express.json());   
 
 // area code → city map
 const areaCodeMap = {
@@ -34,7 +30,7 @@ app.post("/", (req, res) => {
 
   
   //const { areaCode } = JSON.parse(req.body);
-  let areaCode = "test";
+  let areaCode = req.body.areaCode;
 
 
   const city = areaCodeMap[areaCode] || "Unknown";
@@ -47,7 +43,7 @@ app.post("/", (req, res) => {
   const time = parseFloat((hours + minutes / 60).toFixed(2));
 
   // Add areaCode to the return for debugging
-  return res.json({ city, time, areaCode, rawFromRetell: req.rawBody });
+  return res.json({ city, time, areaCode});
 });
 
 
