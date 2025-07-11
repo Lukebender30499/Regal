@@ -27,7 +27,13 @@ const areaCodeMap = {
 };
 
 app.post("/", (req, res) => {
-  const areaCode = String(req.body?.areaCode);
+  const rawAreaCode =
+  String(
+    req.body?.areaCode ??               // direct (e.g. from curl)
+    req.body?.arguments?.areaCode ??    // Retell wrapper (most common)
+    ""
+  );
+
 /*   let areaCode = req.body?.areaCode;
 
   // Normalize
