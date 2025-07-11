@@ -38,22 +38,18 @@ app.post("/telnyx", express.json(), async (req, res) => {
   const callId = ev.data.payload.call_control_id;  // Telnyx's unique ID
   const from   = ev.data.payload.from;            // "+12035550123"
 
-  // Push a Retell variable.  This is the only outbound call you need.
-  await axios.post(
-    `https://api.retellai.com/v1/calls/${callId}/variables`,
-    { key: "caller_number", value: from },
-    { headers: { Authorization: `Bearer ${process.env.RETELL_API_KEY}` } }
-  );
+  callerCache.set(callId, from);
 
   res.sendStatus(200);
 });
 
 
 app.post("/get-city-time", express.json(), (req, res) => {
-  const phone = req.body.args.caller_number;  // "+12035550123"
-  const areaCode  = phone.slice(2, 5);            // "203"
+  const telnyxId = req.body.args.call_control_id;
+  const phone    = callerCache.get(telnyxId) || "";
+  const areaCode = phone.slice(2, 5) || "000";
 
-  const city = areaCodeMap[area] || "Unknown";
+  const city = areaCodeMap[areaCode] || "Unknown";
   const now = new Date();
   const estTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
   const hours = estTime.getHours();
