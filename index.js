@@ -27,7 +27,6 @@ const areaCodeMap = {
 
 app.post("/", (req, res) => {
   const rawAreaCode = req.body?.areaCode;
-
   let areaCode = req.body?.areaCode;
 
   console.log("Raw request body:", req.body);
@@ -67,7 +66,7 @@ console.log("Normalized areaCode:", areaCode);
   const time = parseFloat((hours + minutes / 60).toFixed(2));
 
   // Add areaCode to the return for debugging
-  return res.json({ city, time, rawAreaCode });
+  return res.json({ city, time, areaCode, rawAreaCodemmit });
 });
 
 
