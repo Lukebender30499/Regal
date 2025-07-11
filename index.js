@@ -26,11 +26,15 @@ const areaCodeMap = {
 };
 
 app.post("/", (req, res) => {
-  const areaCode = req.body.areaCode || req.body.parameters?.areaCode;
+  const rawAreaCode = req.body.areaCode || req.body.parameters?.areaCode;
+const areaCode = rawAreaCode?.trim();
 
-  if (!areaCode || !/^\d{3}$/.test(areaCode)) {
-    return res.status(400).json({ error: "Invalid area code" });
-  }
+console.log("Raw areaCode:", rawAreaCode);
+console.log("Trimmed areaCode:", areaCode);
+
+if (!areaCode || !/^\d{3}$/.test(areaCode)) {
+  return res.status(400).json({ error: "Invalid area code" });
+}
 
   const city = areaCodeMap[areaCode] || "Unknown";
 
