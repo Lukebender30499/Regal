@@ -27,35 +27,16 @@ const areaCodeMap = {
 };
 
 app.post("/", (req, res) => {
-  const rawAreaCode =
-  String(
-    req.body?.areaCode ??               // direct (e.g. from curl)
-    req.body?.arguments?.areaCode ??    // Retell wrapper (most common)
-    ""
-  );
-
-/*   let areaCode = req.body?.areaCode;
+  let areaCode =
+    req.body?.areaCode ||                // plain JSON: { "areaCode": "203" }
+    req.body?.arguments?.areaCode ||    // wrapper:  { "arguments": { "areaCode": "203" } }
+    req.body?.["areaCode"] ||      
+    "";
 
   // Normalize
- if (!areaCode) {
-  areaCode = "";
-} else if (typeof areaCode !== "string") {
-  areaCode = String(areaCode);
-}
-//areaCode = areaCode.replace(/[^\d]/g, "");
+ areaCode = String(areaCode).replace(/[^\d]/g, "");
 
-if (!areaCode || !/^\d{3}$/.test(areaCode) || !areaCodeMap[areaCode]) {
-  console.log("Invalid or unrecognized areaCode. Using fallback '000'");
-  areaCode = "000";
-}
-console.log("Normalized areaCode:", areaCode);
-
-
-  // Validate
-  if (!areaCode || !/^\d{3}$/.test(areaCode)) {
-    console.log("Invalid areaCode. Using fallback '000'");
-    areaCode = "000";
-  } */
+ if (!/^\d{3}$/.test(areaCode)) areaCode = "000";
 
   const city = areaCodeMap[areaCode] || "Unknown";
 
@@ -67,7 +48,7 @@ console.log("Normalized areaCode:", areaCode);
   const time = parseFloat((hours + minutes / 60).toFixed(2));
 
   // Add areaCode to the return for debugging
-  return res.json({ city, time, rawAreaCode });
+  return res.json({ city, time, areaCode });
 });
 
 
