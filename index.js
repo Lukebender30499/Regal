@@ -6,7 +6,6 @@ require("dotenv").config();          // RETELL_API_KEY in .env
 const axios   = require("axios");
 const NodeCache = require("node-cache");  // lightweight in-memory cache
 const callerCache = new NodeCache({ stdTTL: 60 * 60 * 4 }); // 4-hr TTL
-exports.getCallerNumber = callId => callerCache.get(callId);
 
 app.use(cors());
 app.use(express.json());   
@@ -30,24 +29,25 @@ const areaCodeMap = {
   "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
 };
 
-app.post("/telnyx", express.json(), async (req, res) => {
+app.post("/telnyx", express.json(), (req, res) => {
   const ev = req.body;
 
   if (ev?.data?.event_type !== "call.answered") return res.sendStatus(200);
 
-  const callId = ev.data.payload.call_control_id;  // Telnyx's unique ID
-  const from   = ev.data.payload.from;            // "+12035550123"
+ const retellId = ev.data.payload.headers["X-Retell-Call-Id"]; // "call_abc123"
+ const phone    = ev.data.payload.from;                        // "+12035550123"
+ callerCache.set(retellId, phone);
 
-  callerCache.set(callId, from);
+  callerCache.set(telnyxId, phone);
 
   res.sendStatus(200);
 });
 
 
 app.post("/get-city-time", express.json(), (req, res) => {
-  const telnyxId = req.body.args.call_control_id;
-  const phone    = callerCache.get(telnyxId) || "";
-  const areaCode = phone.slice(2, 5) || "000";
+  const id    = req.body.args.call_id;          // "call_abc123"
+  const phone = callerCache.get(id) || "";      // "+12035550123" or ""
+  const areaCode  = phone.slice(2, 5) || "000";
 
   const city = areaCodeMap[areaCode] || "Unknown";
   const now = new Date();
