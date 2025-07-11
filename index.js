@@ -26,7 +26,7 @@ const areaCodeMap = {
 };
 
 app.post("/", (req, res) => {
-  const areaCode = req.body.areaCode;
+  const areaCode = req.body.areaCode || req.body.parameters?.areaCode;
 
   if (!areaCode || !/^\d{3}$/.test(areaCode)) {
     return res.status(400).json({ error: "Invalid area code" });
