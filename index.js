@@ -33,7 +33,13 @@ app.post("/", (req, res) => {
   console.log("Type of areaCode:", typeof areaCode);
 
   // Normalize
-  areaCode = areaCode?.toString().trim();
+ // areaCode = areaCode?.toString().trim();
+ if (typeof areaCode !== "string") {
+  areaCode = String(areaCode);
+}
+areaCode = areaCode.replace(/[^\d]/g, "");  // remove any non-digit characters
+console.log("Normalized areaCode:", areaCode);
+
 
   // Validate
   if (!areaCode || !/^\d{3}$/.test(areaCode)) {
