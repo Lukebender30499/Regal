@@ -1,63 +1,46 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-
+const express = require("express");
+const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json()); // important for parsing JSON body
 
+// area code → city map
 const areaCodeMap = {
   // New York
-  "212": { city: "New York" }, "315": { city: "New York" }, "332": { city: "New York" },
-  "347": { city: "New York" }, "516": { city: "New York" }, "518": { city: "New York" },
-  "585": { city: "New York" }, "607": { city: "New York" }, "631": { city: "New York" },
-  "646": { city: "New York" }, "680": { city: "New York" }, "716": { city: "New York" },
-  "718": { city: "New York" }, "838": { city: "New York" }, "845": { city: "New York" },
-  "914": { city: "New York" }, "917": { city: "New York" }, "929": { city: "New York" },
-
+  "212": "New York", "315": "Syracuse", "332": "New York", "347": "Bronx",
+  "516": "Hempstead", "518": "Albany", "585": "Rochester", "607": "Binghamton",
+  "631": "Islip", "646": "New York", "716": "Buffalo", "718": "Queens",
+  "845": "Poughkeepsie", "914": "Yonkers", "917": "New York", "929": "Brooklyn",
   // California
-  "209": { city: "California" }, "213": { city: "California" }, "279": { city: "California" },
-  "310": { city: "California" }, "323": { city: "California" }, "341": { city: "California" },
-  "408": { city: "California" }, "415": { city: "California" }, "424": { city: "California" },
-  "442": { city: "California" }, "510": { city: "California" }, "530": { city: "California" },
-  "559": { city: "California" }, "562": { city: "California" }, "619": { city: "California" },
-  "626": { city: "California" }, "650": { city: "California" }, "657": { city: "California" },
-  "661": { city: "California" }, "669": { city: "California" }, "707": { city: "California" },
-  "714": { city: "California" }, "747": { city: "California" }, "752": { city: "California" },
-  "760": { city: "California" }, "805": { city: "California" }, "818": { city: "California" },
-  "820": { city: "California" }, "831": { city: "California" }, "858": { city: "California" },
-  "909": { city: "California" }, "916": { city: "California" }, "925": { city: "California" },
-  "949": { city: "California" }, "951": { city: "California" },
-
+  "209": "Stockton", "213": "Los Angeles", "310": "Santa Monica", "323": "Los Angeles",
+  "408": "San Jose", "415": "San Francisco", "424": "Inglewood", "510": "Oakland",
+  "530": "Chico", "559": "Fresno", "562": "Long Beach", "619": "San Diego",
+  "626": "Pasadena", "650": "San Mateo", "657": "Anaheim", "707": "Santa Rosa",
+  "714": "Santa Ana", "747": "Burbank", "760": "Escondido", "805": "Ventura",
+  "818": "Glendale", "831": "Salinas", "858": "La Jolla", "909": "San Bernardino",
+  "916": "Sacramento", "925": "Concord", "949": "Irvine",
   // Connecticut
-  "203": { city: "Connecticut" }, "475": { city: "Connecticut" },
-  "860": { city: "Connecticut" }, "959": { city: "Connecticut" }
+  "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London"
 };
 
-app.post('/area-code', (req, res) => {
-  const phoneNumber = req.body.phoneNumber;
+app.post("/", (req, res) => {
+  const areaCode = req.body.areaCode;
 
-  if (!phoneNumber || typeof phoneNumber !== 'string') {
-    return res.status(400).json({ error: 'Invalid or missing phoneNumber' });
+  if (!areaCode || !/^\d{3}$/.test(areaCode)) {
+    return res.status(400).json({ error: "Invalid area code" });
   }
 
-  const digits = phoneNumber.replace(/\D/g, '');
-  if (digits.length < 10) {
-    return res.status(400).json({ error: 'Phone number too short' });
+  const city = areaCodeMap[areaCode];
+
+  if (city) {
+    return res.json({ city });
+  } else {
+    return res.json({ city: "Unknown" });
   }
-
-  const areaCode = digits.slice(-10, -7);
-  const location = areaCodeMap[areaCode];
-
-  if (!location) {
-    return res.json({ city: null });
-  }
-
-  res.json({ city: location.city });
 });
 
 app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+  console.log(`Server running on port ${port}`);
 });
