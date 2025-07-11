@@ -2,6 +2,11 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3000;
+require("dotenv").config();          // RETELL_API_KEY in .env
+const axios   = require("axios");
+const NodeCache = require("node-cache");  // lightweight in-memory cache
+const callerCache = new NodeCache({ stdTTL: 60 * 60 * 4 }); // 4-hr TTL
+exports.getCallerNumber = callId => callerCache.get(callId);
 
 app.use(cors());
 app.use(express.json());   
@@ -25,17 +30,44 @@ const areaCodeMap = {
   "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
 };
 
+app.post("/telnyx", express.json(), async (req, res) => {
+  const e = req.body;
+
+  /* we care only about the moment the call is answered */
+  if (e?.data?.event_type !== "call.answered") return res.sendStatus(200);
+
+  const from   = e.data.payload.from;             // "+12039930379"
+  const callId = e.data.payload.call_control_id;  // "v3:Fnk..."
+
+  /* 1️⃣  keep a local copy (so any other route can use it fast) */
+  callerCache.set(callId, from);
+
+  /* 2️⃣  push it into Retell so the flow can reference {{caller_number}} */
+  try {
+    await axios.post(
+      `https://api.retellai.com/v1/calls/${callId}/variables`,
+      { key: "caller_number", value: from },
+      { headers: { Authorization: `Bearer ${process.env.RETELL_API_KEY}` } }
+    );
+    console.log(`[telnyx] stored caller_number for ${callId}: ${from}`);
+  } catch (err) {
+    console.error("Retell variable API failed:", err.response?.data || err);
+  }
+
+  res.sendStatus(200);
+});
+
+
 app.post("/get-city-time", (req, res) => {
-  console.log("CALL OBJECT:", JSON.stringify(req.body.call, null, 2));
-  const callerNumber = req.body?.call?.from_number || ""
-  const areaCode = callerNumber.replace(/\D/g, "").slice(1, 4) || "000";
+  const phone = req.body.args.caller_number;  // defined because webhook stored it
+  const areaCode = phone ? phone.slice(2, 5) : "000";
   const city = areaCodeMap[areaCode] || "Unknown";
   const now = new Date();
   const estTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
   const hours = estTime.getHours();
   const minutes = estTime.getMinutes();
   const time = parseFloat((hours + minutes / 60).toFixed(2));
-  res.json({city, time, callerNumber});
+  res.json({city, time, areaCode});
 });
 
 
