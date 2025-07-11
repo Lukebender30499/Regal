@@ -27,15 +27,15 @@ const areaCodeMap = {
 
 app.post("/get-city-time", (req, res) => {
   console.log("CALL OBJECT:", JSON.stringify(req.body.call, null, 2));
-  const callerNumber = String(req.body?.call?.from_number || "")
-  const areaCode = callerNumber.replace(/\D/g, "").slice(2, 5) || "000";
+  const callerNumber = req.body?.call?.from_number || ""
+  const areaCode = callerNumber.replace(/\D/g, "").slice(1, 4) || "000";
   const city = areaCodeMap[areaCode] || "Unknown";
   const now = new Date();
   const estTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
   const hours = estTime.getHours();
   const minutes = estTime.getMinutes();
   const time = parseFloat((hours + minutes / 60).toFixed(2));
-  res.json({city, time});
+  res.json({city, time, callerNumber});
 });
 
 
