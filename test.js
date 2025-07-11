@@ -4,7 +4,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // important for parsing JSON body
 
 // area code → city map
 const areaCodeMap = {
@@ -32,19 +32,15 @@ app.post("/", (req, res) => {
     return res.status(400).json({ error: "Invalid area code" });
   }
 
-  const city = areaCodeMap[areaCode] || "Unknown";
+  const city = areaCodeMap[areaCode];
 
-  // Get current time in EST and convert to military time (e.g., 14.30)
-  const now = new Date();
-  const estTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
-  const hours = estTime.getHours();
-  const minutes = estTime.getMinutes();
-  const time = parseFloat(`${hours}.${minutes < 10 ? "0" : ""}${minutes}`);
-
-  return res.json({ city, time });
+  if (city) {
+    return res.json({ city });
+  } else {
+    return res.json({ city: "Unknown" });
+  }
 });
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-
