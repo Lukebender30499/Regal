@@ -26,8 +26,17 @@ const areaCodeMap = {
 };
 
 app.post("/", (req, res) => {
-  const { areaCode } = JSON.parse(req.body);
-
+  app.use((req, res, next) => {
+  let chunks = [];
+  req.on("data", chunk => chunks.push(chunk));
+  req.on("end",  () => {
+    req.rawBody = Buffer.concat(chunks).toString();  // ← exact payload
+    next();
+  });
+});
+  
+  //const { areaCode } = JSON.parse(req.body);
+  const {areaCode} = "test";
 
 
   const city = areaCodeMap[areaCode] || "Unknown";
@@ -40,7 +49,7 @@ app.post("/", (req, res) => {
   const time = parseFloat((hours + minutes / 60).toFixed(2));
 
   // Add areaCode to the return for debugging
-  return res.json({ city, time, areaCode });
+  return res.json({ city, time, areaCode, rawFromRetell: req.rawBody });
 });
 
 
