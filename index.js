@@ -49,7 +49,7 @@ app.post("/telnyx", express.json(), async (req, res) => {
 });
 
 
-app.post("/city_and_time", express.json(), (req, res) => {
+app.post("/get-city-time", express.json(), (req, res) => {
   const phone = req.body.args.caller_number;  // "+12035550123"
   const areaCode  = phone.slice(2, 5);            // "203"
 
