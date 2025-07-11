@@ -4,8 +4,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.text());
 
 // area code → city map
 const areaCodeMap = {
@@ -27,16 +26,9 @@ const areaCodeMap = {
 };
 
 app.post("/", (req, res) => {
-  let areaCode =
-    req.body?.areaCode ||                // plain JSON: { "areaCode": "203" }
-    req.body?.arguments?.areaCode ||    // wrapper:  { "arguments": { "areaCode": "203" } }
-    req.body?.["areaCode"] ||      
-    "";
+  const { areaCode } = JSON.parse(req.body);
 
-  // Normalize
- areaCode = String(areaCode).replace(/[^\d]/g, "");
 
- if (!/^\d{3}$/.test(areaCode)) areaCode = "000";
 
   const city = areaCodeMap[areaCode] || "Unknown";
 
