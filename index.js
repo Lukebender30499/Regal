@@ -22,7 +22,7 @@ const areaCodeMap = {
   "818": "Glendale", "831": "Salinas", "858": "La Jolla", "909": "San Bernardino",
   "916": "Sacramento", "925": "Concord", "949": "Irvine",
   // Connecticut
-  "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London"
+  "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
 };
 
 app.post("/", (req, res) => {
