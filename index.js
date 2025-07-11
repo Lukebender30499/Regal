@@ -30,7 +30,11 @@ app.post("/", (req, res) => {
 
   
   //const { areaCode } = JSON.parse(req.body);
-  let areaCode = req.body.areaCode;
+  let areaCode = String(req.body?.args?.areaCode || "")
+                   .replace(/\D/g, "")
+                   .slice(0, 3);
+
+  if (areaCode.length !== 3) areaCode = "000";
 
 
   const city = areaCodeMap[areaCode] || "Unknown";
@@ -43,7 +47,7 @@ app.post("/", (req, res) => {
   const time = parseFloat((hours + minutes / 60).toFixed(2));
 
   // Add areaCode to the return for debugging
-  return res.json({ city, time, areaCode});
+  res.json({ city, time, areaCode });
 });
 
 
