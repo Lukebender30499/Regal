@@ -26,27 +26,32 @@ const areaCodeMap = {
 };
 
 app.post("/", (req, res) => {
-  const rawAreaCode = req.body.areaCode || req.body.parameters?.areaCode;
-const areaCode = rawAreaCode?.trim();
+  let areaCode = req.body.areaCode;
 
-console.log("Raw areaCode:", rawAreaCode);
-console.log("Trimmed areaCode:", areaCode);
+  console.log("Incoming request with areaCode:", areaCode);
+  console.log("Type:", typeof areaCode);
 
-if (!areaCode || !/^\d{3}$/.test(areaCode)) {
-  return res.status(400).json({ error: "Invalid area code" });
-}
+  // Normalize: ensure string and trim whitespace
+  areaCode = areaCode?.toString().trim();
+
+  // Fallback to "000" if not a valid 3-digit area code
+  if (!areaCode || !/^\d{3}$/.test(areaCode)) {
+    console.log("Invalid areaCode received. Falling back to '000'.");
+    areaCode = "000";
+  }
 
   const city = areaCodeMap[areaCode] || "Unknown";
 
-  // Get current time in EST and convert to military time (e.g., 14.30)
+  // Time logic (rounded to 2 decimal places)
   const now = new Date();
   const estTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
   const hours = estTime.getHours();
   const minutes = estTime.getMinutes();
-  const time = parseFloat(`${hours}.${minutes < 10 ? "0" : ""}${minutes}`);
+  const time = parseFloat((hours + minutes / 60).toFixed(2));
 
   return res.json({ city, time });
 });
+
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
