@@ -76,14 +76,14 @@ app.post('/inbound-call', async (req, res) => {
   console.log('🔍 debug inbound-call vars →', { from, to, id, city, hour, isOpen });
 
   return res.json({
-    dynamic_variables: {
-      id,
-      from,
-      to,
-      city,
-      isOpen: isOpen ? 'yes' : 'no',
-      currentHour: hour.toString()
-    }
+    dynamic_variables: {      id,
+                              from,
+                              to,
+                              city,
+                              isOpen: isOpen ? 'yes' : 'no',
+                              isEarly: isEarly ? 'yes' : 'no',
+                              isLate: isLate ? 'yes' : 'no',
+                              isWeekday: isWeekday ? 'yes' : 'no' }
   });
 });
 
