@@ -1,7 +1,7 @@
 // server.js
 // --------------  dependencies --------------
-const express = require('express');
-const cors    = require('cors');
+import express from 'express';
+import cors from 'cors';
 import axios from 'axios';
 // --------------  app setup --------------
 const app  = express();
