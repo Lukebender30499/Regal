@@ -25,25 +25,23 @@ const areaCodeMap = {
 };
 
 app.post("/inbound-call", async (req, res) => {
-  const from = req.body.call_inbound?.from_number || "";
-  const areaCode = from.slice(2, 5) || "000";
-  const city = areaCodeMap[areaCode] || "Unknown";
-  const id = req.body.call_inbound?.agent_id || "";
-  const to = req.body.call_inbound?.to_number || "";
+  const from = req.body.call_inbound.from_number;
+  const areaCode = from.slice(2, 5);
+  const city = areaCodeMap[areaCode];
+  const id = req.body.call_inbound.agent_id;
+  const to = req.body.call_inbound.to_number;
   const est = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
   const hour = est.getHours();
   const isOpen = hour >= 9 && hour < 18;
 
   res.json({
-    call_inbound: {
-      dynamic_variables: {
-        id: agent_id,
-        from: from_number,
-        to: to_number,
-        city: city,
+    dynamic_variables: {
+        id,
+        from,
+        to,
+        city,
         isOpen: isOpen ? "yes" : "no",
         currentHour: hour.toString()
-      }
     }
       
   });
