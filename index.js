@@ -27,20 +27,29 @@ const areaCodeMap = {
 };
 
 app.post("/inbound-call", express.json(), (req, res) => {
+  const from = req.body.call_inbound?.from_number || "";
+  const areaCode = from.slice(2, 5) || "000";
+  const city = areaCodeMap[areaCode] || "Unknown";
+  const id = req.body.call_inbound?.agent_id || "";
+  const version = req.body.call_inbound?.agent_version?.toString() || "";
+  const to = req.body.call_inbound?.to_number || "";
 
   res.json({
-      id: req.body.call_inbound?.agent_id,
-      version: req.body.call_inbound?.agent_version,
-      from: req.body.call_inbound?.from_number,
-      to: req.body.call_inbound?.to_number,
-      areaCode: from_number.slice(2,5) || "000",
-      city: areaCodeMap[areaCode] || "Unknown",
+    dynamic_variables: {
+      id,
+      version,
+      from,
+      to,
+      areaCode,
+      city
+    }
   });
+
   setImmediate(() => {
-  console.log("From number:", from);
-  console.log("Area code:", areaCode);
-  console.log("City:", city);
-});
+    console.log("From number:", from);
+    console.log("Area code:", areaCode);
+    console.log("City:", city);
+  });
 });
 
 /*app.post("/telnyx", express.json(), (req, res) => {
