@@ -1,3 +1,4 @@
+ app.post("/inbound-call", (req, res) => {res.json({inbound_info: req.body.call_inbound});});
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -26,10 +27,8 @@ const areaCodeMap = {
   "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
 };
 
-app.post("/inbound-call", express.json(), (req, res) => {
-  /*res.json({inbound_info: req.body.call_inbound});
-});*/
-  const from = req.body.call_inbound?.from_number || "";
+
+  /*const from = req.body.call_inbound?.from_number || "";
   const areaCode = from.slice(2, 5) || "000";
   const city = areaCodeMap[areaCode] || "Unknown";
   const id = req.body.call_inbound?.agent_id || "";
@@ -39,16 +38,14 @@ app.post("/inbound-call", express.json(), (req, res) => {
   const isOpen = hour >= 9 && hour < 18;
 
   res.json({
-    dynamic_variables: {
       id,
       from,
       to,
       city,
       isOpen: isOpen ? "yes" : "no",
       currentHour: hour.toString()
-    }
   });
-})
+})*/
 
 /*app.post("/telnyx", express.json(), (req, res) => {
   const ev = req.body;
