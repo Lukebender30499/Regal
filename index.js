@@ -1,25 +1,17 @@
- 
-import express from "express";
+// server.js
+// --------------  dependencies --------------
+const express = require('express');
+const cors    = require('cors');
 
-app.use(express.json());            // <-- don’t forget this!
+// --------------  app setup --------------
+const app  = express();
+const PORT = process.env.PORT || 3000;   // Render injects its own PORT
 
-// this is the webhook endpoint the provider must call:
-app.use(express.json());          // body-parser
+// --------------  middleware --------------
+app.use(cors());          // allow cross-origin calls
+app.use(express.json());  // parse incoming JSON bodies
 
-app.post('/inbound-call', (req, res) => {
-  console.log('inbound-call hit ->', req.body);
-  // …do whatever you need…
-  res.json({ received: true });
-});
-
-
-const express = require("express");
-const cors = require("cors");
-const app = express();
-
-app.use(cors());
-app.use(express.json());   
-// area code → city map
+// --------------  data ---------------------
 const areaCodeMap = {
   // New York
   "212": "New York", "315": "Syracuse", "332": "New York", "347": "Bronx",
@@ -35,72 +27,48 @@ const areaCodeMap = {
   "818": "Glendale", "831": "Salinas", "858": "La Jolla", "909": "San Bernardino",
   "916": "Sacramento", "925": "Concord", "949": "Irvine",
   // Connecticut
-  "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
+  "203": "Bridgeport", "475": "New Haven", "860": "Hartford",
+  "959": "New London", "000": "Unknown",
 };
 
-// example Express code
-import express from "express";
+// --------------  routes -------------------
 
-app.use(express.json());            // <-- don’t forget this!
+// sanity-check root
+app.get('/', (_, res) => res.json({ message: 'Webhook server is running!' }));
 
-// this is the webhook endpoint the provider must call:
-app.post("/webhook", (req, res) => {
-  console.log("Inbound payload:", req.body);
+// generic webhook endpoint
+app.post('/webhook', (req, res) => {
+  console.log('Inbound payload:', req.body);
   res.sendStatus(200);
 });
 
-// sanity-check root
-app.get("/", (_, res) => res.json({ message: "Webhook server is running!" }));
+// provider’s production webhook
+app.post('/inbound-call', async (req, res) => {
+  const from      = req.body.call_inbound.from_number || "";
+  const areaCode  = from.slice(2, 5);
+  const city      = areaCodeMap[areaCode] ?? 'Unknown';
+  const id        = req.body.call_inbound.agent_id;
+  const to        = req.body.call_inbound.to_number;
 
-
-app.listen(PORT, "0.0.0.0", () => console.log(`Listening on ${PORT}`));
-
-app.post("/inbound-call", async (req, res) => {
-  const from = req.body.call_inbound.from_number;
-  const areaCode = from.slice(2, 5);
-  const city = areaCodeMap[areaCode];
-  const id = req.body.call_inbound.agent_id;
-  const to = req.body.call_inbound.to_number;
-  const est = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
-  const hour = est.getHours();
+  const est   = new Date(
+    new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
+  );
+  const hour  = est.getHours();
   const isOpen = hour >= 9 && hour < 18;
 
   res.json({
     dynamic_variables: {
-        id,
-        from,
-        to,
-        city,
-        isOpen: isOpen ? "yes" : "no",
-        currentHour: hour.toString()
+      id,
+      from,
+      to,
+      city,
+      isOpen: isOpen ? 'yes' : 'no',
+      currentHour: hour.toString()
     }
-      
   });
-})
-
-app.get("/", (req, res) => {
-  res.json({ message: "Webhook server is running!" });
-});
-/*app.post("/telnyx", express.json(), (req, res) => {
-  const ev = req.body;
-
-  if (ev?.data?.event_type !== "call.answered") return res.sendStatus(200);
-
- const retellId = ev.data.payload.headers["X-Retell-Call-Id"]; // "call_abc123"
- const phone    = ev.data.payload.from;                        // "+12035550123"
- if (typeof retellId === "string" && typeof phone === "string") {
-    callerCache.set(retellId, phone);
-    res.sendStatus(200);
-  } else {
-    res.status(400).json({ error: "Missing call ID or phone number" });
-  }
-
-  res.sendStatus(200);
-});*/
-
-
-
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
 });
 
+// --------------  start server -------------
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server listening on port ${PORT}`);
+});
