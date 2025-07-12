@@ -27,6 +27,8 @@ const areaCodeMap = {
 };
 
 app.post("/inbound-call", express.json(), (req, res) => {
+  console.log("========== INBOUND CALL ==========");
+  console.log("Payload body:", JSON.stringify(req.body, null, 2));
   const from      = req.body.call_inbound?.from_number || "";
   const areaCode  = from.slice(2, 5) || "000";
   const city      = areaCodeMap[areaCode] || "Unknown";
@@ -47,6 +49,16 @@ app.post("/inbound-call", express.json(), (req, res) => {
     }
     // override_agent_id or metadata here if you need them
   });
+  setImmediate(() => {
+  console.log("From number:", from);
+  console.log("Area code:", areaCode);
+  console.log("City:", city);
+  console.log("Time:", time);
+});
+});
+
+app.get("/", (req, res) => {
+  res.send("Server running. POST to /inbound-call");
 });
 
 /*app.post("/telnyx", express.json(), (req, res) => {
