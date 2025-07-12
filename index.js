@@ -27,9 +27,8 @@ const areaCodeMap = {
 };
 
 app.post("/inbound-call", express.json(), (req, res) => {
-  console.log("========== INBOUND CALL ==========");
-  console.log("Payload body:", JSON.stringify(req.body, null, 2));
-  const from      = req.body.call_inbound?.from_number || "";
+  const dynamic_variables = req.body.call_inbound;
+  const from      = dynamic_variables.from_number || "";
   const areaCode  = from.slice(2, 5) || "000";
   const city      = areaCodeMap[areaCode] || "Unknown";
 
