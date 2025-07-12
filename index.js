@@ -54,20 +54,19 @@ app.post('/webhook', (req, res) => {
 
 // provider’s production webhook
 app.post('/inbound-call', async (req, res) => {
-  const payload = req.body.call_inbound;
+  console.log('📥 FULL WEBHOOK BODY:', JSON.stringify(req.body, null, 2));
+  const payload = req.body.call_inbound || req.body.call;
 
   // bail out immediately if we didn’t even get a payload
   if (!payload) {
-    console.error('No payload in request', req.body);
-    return res.status(400).json({ error: 'Malformed request: no payload.' });
+    console.error('No payload at either call_inbound or call!', req.body)
+    return res.status(400).json({ error: 'Malformed request: no payload.' })
   }
+  const { from_number: from, to_number: to, agent_id: id } = payload;
   
   
-  const from      = from_number;
   const areaCode  = from.slice(2, 5);
   const city      = areaCodeMap[areaCode] ?? 'Unknown';
-  const id        = agent_id;
-  const to        = to_number;
 
   const est   = new Date(
     new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
