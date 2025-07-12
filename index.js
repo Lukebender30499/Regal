@@ -73,7 +73,7 @@ app.post('/inbound-call', async (req, res) => {
   );
   const hour  = est.getHours();
   const isOpen = hour >= 9 && hour < 18;
-  console.log('🔍 debug inbound-call vars →', { from, to, id, city, hour, isOpen })
+  console.log('🔍 debug inbound-call vars →', { from, to, id, city, hour, isOpen });
 
   return res.json({
     dynamic_variables: {
