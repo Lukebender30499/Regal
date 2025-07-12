@@ -38,7 +38,6 @@ app.post("/inbound-call", express.json(), (req, res) => {
   const isOpen = hour >= 9 && hour < 18;
 
   res.json({
-    dynamic_variables: {
       id,
       version,
       from,
@@ -47,7 +46,6 @@ app.post("/inbound-call", express.json(), (req, res) => {
       city,
       isOpen: isOpen ? "yes" : "no",
       currentHour: hour.toString()
-    }
   });
 })
 
