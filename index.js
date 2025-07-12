@@ -26,7 +26,9 @@ const areaCodeMap = {
   "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
 };
 
-app.post("/inbound-call", express.json(), (req, res) => {
+app.post("/inbound-call", (req, res) => {
+  /*res.json({inbound_info: req.body.call_inbound});
+});*/
   const from = req.body.call_inbound?.from_number || "";
   const areaCode = from.slice(2, 5) || "000";
   const city = areaCodeMap[areaCode] || "Unknown";
