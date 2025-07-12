@@ -44,19 +44,28 @@ app.post('/webhook', (req, res) => {
 
 // provider’s production webhook
 app.post('/inbound-call', async (req, res) => {
-  const from      = req.body.call_inbound.from_number || "";
+  const payload = req.body.call_inbound;
+
+  // bail out immediately if we didn’t even get a payload
+  if (!payload) {
+    console.error('No payload in request', req.body);
+    return res.status(400).json({ error: 'Malformed request: no payload.' });
+  }
+  
+  
+  const from      = from_number;
   const areaCode  = from.slice(2, 5);
   const city      = areaCodeMap[areaCode] ?? 'Unknown';
-  const id        = req.body.call_inbound.agent_id;
-  const to        = req.body.call_inbound.to_number;
+  const id        = agent_id;
+  const to        = to_number;
 
   const est   = new Date(
     new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
   );
   const hour  = est.getHours();
   const isOpen = hour >= 9 && hour < 18;
-
-  res.json({
+  
+  return res.json({
     dynamic_variables: {
       id,
       from,
