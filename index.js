@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());   
-//app.post("/inbound-call", (req, res) => {res.json({inbound_info: req.body.call_inbound});});
+app.post("/inbound-call", (req, res) => res.json(req.body));
 // area code → city map
 const areaCodeMap = {
   // New York
