@@ -2,7 +2,7 @@
 // --------------  dependencies --------------
 const express = require('express');
 const cors    = require('cors');
-
+import axios from 'axios';
 // --------------  app setup --------------
 const app  = express();
 const PORT = process.env.PORT || 3000;   // Render injects its own PORT
@@ -35,6 +35,16 @@ const areaCodeMap = {
 
 // sanity-check root
 app.get('/', (_, res) => res.json({ message: 'Webhook server is running!' }));
+
+axios.post('http://localhost:3000/inbound-call', {
+  call_inbound: {
+    from_number: '+12025550123',
+    to_number:   '+14155550123',
+    agent_id:    'agent_42'
+  }
+})
+.then(res => console.log('✅  Server response:', res.data))
+.catch(err => console.error('❌  Error:', err.response?.data || err.message));
 
 // generic webhook endpoint
 app.post('/webhook', (req, res) => {
@@ -76,6 +86,43 @@ app.post('/inbound-call', async (req, res) => {
     }
   });
 });
+
+app.post('/inbound-call', (req, res) => {
+  app.post('/inbound-call', (req, res) => {
+  console.log('[DEBUG] raw body:', JSON.stringify(req.body, null, 2));
+
+
+  const payload =
+        req.body.call_inbound ??
+        req.body.dynamic_variables ??
+        req.body;
+
+  if (!payload || typeof payload !== 'object') {
+    console.error('No recognizable payload:', req.body);
+    return res.status(400).json({ error: 'Unrecognized payload shape.' });
+  }
+
+  const { from_number: from = '', to_number: to = '', agent_id: id = '' } = payload;
+  const areaCode = from.slice(2, 5);
+  const city     = areaCodeMap[areaCode] ?? 'Unknown';
+
+  const est      = new Date(
+    new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
+  );
+  const hour  = est.getHours();
+  const isOpen = hour >= 9 && hour < 18;
+
+  // 👀 see what you got
+  console.table({ from, to, id, city, hour, isOpen });
+
+  const dynamic_variables = { id, from, to, city, isOpen: isOpen ? 'yes' : 'no', currentHour: hour.toString() };
+
+  // In dev, send the debug data back too
+  if (process.env.NODE_ENV !== 'production') {
+    return res.json({ dynamic_variables, debug: { from, areaCode, city, hour, isOpen } });
+  }
+  return res.json({ dynamic_variables });
+});});
 
 // --------------  start server -------------
 app.listen(PORT, '0.0.0.0', () => {
