@@ -105,21 +105,36 @@ app.post('/inbound-call', (req, res) => {
   const { from_number: from = '', to_number: to = '', agent_id: id = '' } = payload;
   const areaCode = from.slice(2, 5);
   const city     = areaCodeMap[areaCode] ?? 'Unknown';
+  const hostZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+  const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
+  console.log(`Local time in ${hostZone}:`, localString);
   const est      = new Date(
     new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
   );
+  const local_hour = hostZone.getHours();
+  const isEarly = local_hour <= 9;
+  isLate = local_hour >= 20;
   const hour  = est.getHours();
-  const isOpen = hour >= 9 && hour < 18;
+  const day = now.getDay();
+  const isWeekday = day >= 1 && day <= 5;
+  const isOpen = (hour >= 9 && hour < 18) && isWeekday;
 
   // 👀 see what you got
-  console.table({ from, to, id, city, hour, isOpen });
+  console.table({ from, to, id, city, hour, isOpen, isEarly, isLate, isWeekday });
 
-  const dynamic_variables = { id, from, to, city, isOpen: isOpen ? 'yes' : 'no', currentHour: hour.toString() };
+  const dynamic_variables = { id,
+                              from,
+                              to,
+                              city,
+                              isOpen: isOpen ? 'yes' : 'no',
+                              isEarly: isEarly ? 'yes' : 'no',
+                              isLate: isLate ? 'yes' : 'no',
+                              isWeekday: isWeekday ? 'yes' : 'no' };
 
   // In dev, send the debug data back too
   if (process.env.NODE_ENV !== 'production') {
-    return res.json({ dynamic_variables, debug: { from, areaCode, city, hour, isOpen } });
+    return res.json({ dynamic_variables, debug: { from, areaCode, city, hour, isOpen, isEarly, isLate, isWeekday } });
   }
   return res.json({ dynamic_variables });
 });});
