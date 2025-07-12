@@ -1,8 +1,22 @@
  
+import express from "express";
+
+app.use(express.json());            // <-- don’t forget this!
+
+// this is the webhook endpoint the provider must call:
+app.use(express.json());          // body-parser
+
+app.post('/inbound-call', (req, res) => {
+  console.log('inbound-call hit ->', req.body);
+  // …do whatever you need…
+  res.json({ received: true });
+});
+
+
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const port = process.env.PORT || 3000;
+
 app.use(cors());
 app.use(express.json());   
 // area code → city map
@@ -23,6 +37,23 @@ const areaCodeMap = {
   // Connecticut
   "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
 };
+
+// example Express code
+import express from "express";
+
+app.use(express.json());            // <-- don’t forget this!
+
+// this is the webhook endpoint the provider must call:
+app.post("/webhook", (req, res) => {
+  console.log("Inbound payload:", req.body);
+  res.sendStatus(200);
+});
+
+// sanity-check root
+app.get("/", (_, res) => res.json({ message: "Webhook server is running!" }));
+
+
+app.listen(PORT, "0.0.0.0", () => console.log(`Listening on ${PORT}`));
 
 app.post("/inbound-call", async (req, res) => {
   const from = req.body.call_inbound.from_number;
