@@ -35,14 +35,12 @@ app.post("/inbound-call", express.json(), (req, res) => {
   const to = req.body.call_inbound?.to_number || "";
 
   res.json({
-    dynamic_variables: {
       id,
       version,
       from,
       to,
       areaCode,
       city
-    }
   });
 
   setImmediate(() => {
