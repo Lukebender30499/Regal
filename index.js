@@ -26,7 +26,7 @@ const areaCodeMap = {
   "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
 };
 
-/*app.post("/inbound-call", express.json(), (req, res) => {
+app.post("/inbound-call", express.json(), (req, res) => {
   const from = req.body.call_inbound?.from_number || "";
   const areaCode = from.slice(2, 5) || "000";
   const city = areaCodeMap[areaCode] || "Unknown";
@@ -44,9 +44,7 @@ const areaCodeMap = {
       isOpen: isOpen ? "yes" : "no",
       currentHour: hour.toString()
   });
-})*/
-
-app.post("/inbound-call", express.json(), (req, res) => {res.body})
+})
 
 /*app.post("/telnyx", express.json(), (req, res) => {
   const ev = req.body;
