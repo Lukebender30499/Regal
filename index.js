@@ -42,11 +42,11 @@ app.post("/inbound-call", express.json(), (req, res) => {
 
   // ── correct response shape ──
   res.json({
-    dynamic_variables: {
+    
       city,
       areaCode,
       time: time.toString()   // all values MUST be strings
-    }
+    
     // override_agent_id or metadata here if you need them
   });
   setImmediate(() => {
