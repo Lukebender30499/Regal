@@ -64,15 +64,26 @@ app.post('/inbound-call', async (req, res) => {
   }
   const { from_number: from, to_number: to, agent_id: id } = payload;
   
-  
+  const hostZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
   const areaCode  = from.slice(2, 5);
   const city      = areaCodeMap[areaCode] ?? 'Unknown';
-
+  const now       = new Date();
+  const day       = now.getDay();  
+  
   const est   = new Date(
     new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
   );
+  const hostDate   = new Date(
+    new Date().toLocaleString('en-US', { timeZone: hostZone })
+  );
   const hour  = est.getHours();
-  const isOpen = hour >= 9 && hour < 18;
+  const local_hour = hostDate.getHours();
+  const isEarly = local_hour <= 9;
+  const isLate = local_hour >= 20;
+  const isWeekday = day >= 1 && day <= 5;
+  const isOpen = (hour >= 9 && hour < 18) && isWeekday;
   console.log('🔍 debug inbound-call vars →', { from, to, id, city, hour, isOpen });
 
   return res.json({
