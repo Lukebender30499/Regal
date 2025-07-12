@@ -31,7 +31,6 @@ app.post("/inbound-call", express.json(), (req, res) => {
   const areaCode = from.slice(2, 5) || "000";
   const city = areaCodeMap[areaCode] || "Unknown";
   const id = req.body.call_inbound?.agent_id || "";
-  const version = req.body.call_inbound?.agent_version?.toString() || "";
   const to = req.body.call_inbound?.to_number || "";
   const est = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
   const hour = est.getHours();
@@ -39,10 +38,8 @@ app.post("/inbound-call", express.json(), (req, res) => {
 
   res.json({
       id,
-      version,
       from,
       to,
-      areaCode,
       city,
       isOpen: isOpen ? "yes" : "no",
       currentHour: hour.toString()
