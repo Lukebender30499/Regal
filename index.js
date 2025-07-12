@@ -26,29 +26,30 @@ const areaCodeMap = {
   "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
 };
 
-/*app.post("/inbound-call", express.json(), (req, res) => {
+app.post("/inbound-call", express.json(), (req, res) => {
   const from = req.body.call_inbound?.from_number || "";
   const areaCode = from.slice(2, 5) || "000";
   const city = areaCodeMap[areaCode] || "Unknown";
   const id = req.body.call_inbound?.agent_id || "";
   const version = req.body.call_inbound?.agent_version?.toString() || "";
   const to = req.body.call_inbound?.to_number || "";
+  const est = new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
+  const hour = est.getHours();
+  const isOpen = hour >= 9 && hour < 18;
 
   res.json({
+    dynamic_variables: {
       id,
       version,
       from,
       to,
       areaCode,
-      city
+      city,
+      isOpen: isOpen ? "yes" : "no",
+      currentHour: hour.toString()
+    }
   });
-
-  setImmediate(() => {
-    console.log("From number:", from);
-    console.log("Area code:", areaCode);
-    console.log("City:", city);
-  });
-});*/
+})
 
 /*app.post("/telnyx", express.json(), (req, res) => {
   const ev = req.body;
