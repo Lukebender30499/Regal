@@ -27,37 +27,20 @@ const areaCodeMap = {
 };
 
 app.post("/inbound-call", express.json(), (req, res) => {
-  const dynamic_variables = req.body.call_inbound;
-  const from      = dynamic_variables.from_number || "";
-  const areaCode  = from.slice(2, 5) || "000";
-  const city      = areaCodeMap[areaCode] || "Unknown";
 
-  const est       = new Date(new Date()
-                     .toLocaleString("en-US",
-                       { timeZone: "America/New_York" }));
-  const time      = +(
-                     est.getHours() + est.getMinutes() / 60
-                   ).toFixed(2);   // → 18.78
-
-  // ── correct response shape ──
   res.json({
-    
-      city,
-      areaCode,
-      time: time.toString()   // all values MUST be strings
-    
-    // override_agent_id or metadata here if you need them
+      id: req.body.call_inbound?.agent_id,
+      version: req.body.call_inbound?.agent_version,
+      from: req.body.call_inbound?.from_number,
+      to: req.body.call_inbound?.to_number,
+      areaCode: from_number.slice(2,5) || "000",
+      city: areaCodeMap[areaCode] || "Unknown",
   });
   setImmediate(() => {
   console.log("From number:", from);
   console.log("Area code:", areaCode);
   console.log("City:", city);
-  console.log("Time:", time);
 });
-});
-
-app.get("/", (req, res) => {
-  res.send("Server running. POST to /inbound-call");
 });
 
 /*app.post("/telnyx", express.json(), (req, res) => {
