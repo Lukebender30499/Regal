@@ -26,7 +26,7 @@ const areaCodeMap = {
   "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
 };
 
-app.post("/inbound-call", (req, res) => {
+app.post("/inbound-call", express.json(), (req, res) => {
   /*res.json({inbound_info: req.body.call_inbound});
 });*/
   const from = req.body.call_inbound?.from_number || "";
@@ -39,12 +39,14 @@ app.post("/inbound-call", (req, res) => {
   const isOpen = hour >= 9 && hour < 18;
 
   res.json({
+    dynamic_variables: {
       id,
       from,
       to,
       city,
       isOpen: isOpen ? "yes" : "no",
       currentHour: hour.toString()
+    }
   });
 })
 
