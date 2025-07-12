@@ -27,32 +27,25 @@ const areaCodeMap = {
 };
 
 app.post("/inbound-call", express.json(), (req, res) => {
-  
-  const from = req.body.call_inbound?.from_number || "";
-  const areaCode = from.slice(2, 5) || "000";
+  const from      = req.body.call_inbound?.from_number || "";
+  const areaCode  = from.slice(2, 5) || "000";
+  const city      = areaCodeMap[areaCode] || "Unknown";
 
-  // --- city lookup (your existing map) --------------------
-  const city = areaCodeMap[areaCode] || "Unknown";
+  const est       = new Date(new Date()
+                     .toLocaleString("en-US",
+                       { timeZone: "America/New_York" }));
+  const time      = +(
+                     est.getHours() + est.getMinutes() / 60
+                   ).toFixed(2);   // → 18.78
 
-  // --- current EST time as decimal hours ------------------
-  const est   = new Date(
-                  new Date().toLocaleString("en-US",
-                    { timeZone: "America/New_York" }));
-  const time  = +(
-                  est.getHours() + est.getMinutes() / 60
-                ).toFixed(2);              // e.g. 18.78
-
-  // --- IMPORTANT: all dynamic var values must be strings --
+  // ── correct response shape ──
   res.json({
-    call_inbound: {
-      dynamic_variables: {
-        city,
-        areaCode,
-        time: time.toString()
-      }
-      // ▸ (optional) override_agent_id: "agent_homeowners"
-      // ▸ (optional) metadata: { any: "json-you-need" }
+    dynamic_variables: {
+      city,
+      areaCode,
+      time: time.toString()   // all values MUST be strings
     }
+    // override_agent_id or metadata here if you need them
   });
 });
 
