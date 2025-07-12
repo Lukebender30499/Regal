@@ -1,11 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const port = process.env.PORT || 3000;
-require("dotenv").config();          // RETELL_API_KEY in .env
-const axios   = require("axios");
-const NodeCache = require("node-cache");  // lightweight in-memory cache
-const callerCache = new NodeCache({ stdTTL: 60 * 60 * 4 }); // 4-hr TTL
+
 
 app.use(cors());
 app.use(express.json());   
@@ -29,7 +25,37 @@ const areaCodeMap = {
   "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
 };
 
-app.post("/telnyx", express.json(), (req, res) => {
+app.post("/inbound-call", express.json(), (req, res) => {
+  
+  const from = req.body.call_inbound?.from_number || "";
+  const areaCode = from.slice(2, 5) || "000";
+
+  // --- city lookup (your existing map) --------------------
+  const city = areaCodeMap[areaCode] || "Unknown";
+
+  // --- current EST time as decimal hours ------------------
+  const est   = new Date(
+                  new Date().toLocaleString("en-US",
+                    { timeZone: "America/New_York" }));
+  const time  = +(
+                  est.getHours() + est.getMinutes() / 60
+                ).toFixed(2);              // e.g. 18.78
+
+  // --- IMPORTANT: all dynamic var values must be strings --
+  res.json({
+    call_inbound: {
+      dynamic_variables: {
+        city,
+        areaCode,
+        time: time.toString()
+      }
+      // ▸ (optional) override_agent_id: "agent_homeowners"
+      // ▸ (optional) metadata: { any: "json-you-need" }
+    }
+  });
+});
+
+/*app.post("/telnyx", express.json(), (req, res) => {
   const ev = req.body;
 
   if (ev?.data?.event_type !== "call.answered") return res.sendStatus(200);
@@ -44,25 +70,7 @@ app.post("/telnyx", express.json(), (req, res) => {
   }
 
   res.sendStatus(200);
-});
-
-
-app.post("/get-city-time", express.json(), (req, res) => {
-  const id    = req.body.args.call_id;          // "call_abc123"
-   if (typeof id !== "string" && typeof id !== "number") {
-    return res.status(400).json({ error: "Missing or invalid call_id" }); }
-    
-  const phone = callerCache.get(id) || "";      // "+12035550123" or ""
-  const areaCode  = phone.slice(2, 5) || "000";
-
-  const city = areaCodeMap[areaCode] || "Unknown";
-  const now = new Date();
-  const estTime = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
-  const hours = estTime.getHours();
-  const minutes = estTime.getMinutes();
-  const time = parseFloat((hours + minutes / 60).toFixed(2));
-  res.json({city, time, areaCode});
-});
+});*/
 
 
 
