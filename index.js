@@ -3,11 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3000;
-
-
 app.use(cors());
 app.use(express.json());   
-app.post("/inbound-call", (req, res) => res.json(req.body));
 // area code → city map
 const areaCodeMap = {
   // New York
@@ -27,8 +24,8 @@ const areaCodeMap = {
   "203": "Bridgeport", "475": "New Haven", "860": "Hartford", "959": "New London", "000": "Unknown",
 };
 
-
-  /*const from = req.body.call_inbound?.from_number || "";
+app.post("/inbound-call", async (req, res) => {
+  const from = req.body.call_inbound?.from_number || "";
   const areaCode = from.slice(2, 5) || "000";
   const city = areaCodeMap[areaCode] || "Unknown";
   const id = req.body.call_inbound?.agent_id || "";
@@ -38,15 +35,23 @@ const areaCodeMap = {
   const isOpen = hour >= 9 && hour < 18;
 
   res.json({
-      id,
-      from,
-      to,
-      city,
-      isOpen: isOpen ? "yes" : "no",
-      currentHour: hour.toString()
+    call_inbound: {
+      dynamic_variables: {
+        id: agent_id,
+        from: from_number,
+        to: to_number,
+        city: city,
+        isOpen: isOpen ? "yes" : "no",
+        currentHour: hour.toString()
+      }
+    }
+      
   });
-})*/
+})
 
+app.get("/", (req, res) => {
+  res.json({ message: "Webhook server is running!" });
+});
 /*app.post("/telnyx", express.json(), (req, res) => {
   const ev = req.body;
 
