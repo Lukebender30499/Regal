@@ -18,8 +18,17 @@ app.use(express.json());  // parse incoming JSON bodies
 const ARTICLE_PREFIX = 'https://www.lemonade.com/homeowners/explained/';
 
 app.post('/get-article', async (req, res) => {
-  const title = req.body.article?.title;
-  if (!title) return res.status(400).json({ error: 'Missing title parameter' });
+  let title;
+  if (typeof req.body === 'string') {
+    // raw string, possibly JSON-quoted
+    title = req.body.trim().replace(/^"|"$/g, '');
+  } else if (req.body.title) {
+    // { title: "…" }
+    title = req.body.title;
+  } else if (req.body.article?.title) {
+    // { article: { title: "…" } }
+    title = req.body.article.title;
+  }
 
   const lower_title = title.toLowerCase()
     .replace(/[^\w\s-]/g, '') // remove punctuation
@@ -30,14 +39,14 @@ app.post('/get-article', async (req, res) => {
     try {
     const response = await axios.get(url)
     } catch (err) { res.json({
-      article: { title: "Sorry, I can’t fetch that article right now." }
+      article: { body: "Sorry, I can’t fetch that article right now." }
     })
     }
     try{
     const html = response.data;
     const dom = new JSDOM(html);
     const document = dom.window.document;
-    const container = document.querySelector('article') || document.body;
+    const container = document.querySelector('article') || document.title;
     let startEl = container.querySelector('h1');
     if (!startEl) startEl = container.querySelector('p');
 
