@@ -238,27 +238,6 @@ const areaCodeMap = {
   "307": "Cheyenne",
 };
 
-
-// --------------  routes -------------------
-
-app.get('/', (_, res) => res.json({ message: 'Webhook server is running!' }));
-
-axios.post('http://localhost:3000/inbound-call', {
-  call_inbound: {
-    from_number: '+12025550123',
-    to_number:   '+14155550123',
-    agent_id:    'agent_42'
-  }
-})
-.then(res => console.log('✅  Server response:', res.data))
-.catch(err => console.error('❌  Error:', err.response?.data || err.message));
-
-// generic webhook endpoint
-app.post('/webhook', (req, res) => {
-  console.log('Inbound payload:', req.body);
-  res.sendStatus(200);
-});
-
 // provider’s production webhook
 app.post('/inbound-call', async (req, res) => {
   console.log('📥 FULL WEBHOOK BODY:', JSON.stringify(req.body, null, 2));
@@ -270,7 +249,6 @@ app.post('/inbound-call', async (req, res) => {
     return res.status(400).json({ error: 'Malformed request: no payload.' })
   }
   const { from_number: from, to_number: to, agent_id: id } = payload;
-  
   const hostZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
@@ -278,7 +256,7 @@ app.post('/inbound-call', async (req, res) => {
   const city      = areaCodeMap[areaCode] ?? 'Unknown';
   const now       = new Date();
   const day       = now.getDay();  
-  
+
   const est   = new Date(
     new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
   );
@@ -291,23 +269,22 @@ app.post('/inbound-call', async (req, res) => {
   const isLate = local_hour >= 20;
   const isWeekday = day >= 1 && day <= 5;
   const isOpen = (hour >= 9 && hour < 18) && isWeekday;
-  console.log('🔍 debug inbound-call vars →', {from,to,id,city,hour,isOpen,isEarly,isLate,isWeekday});
+  console.log('🔍 debug inbound-call vars →', { from, to, id, city, hour, isOpen, isEarly, isLate, isWeekday });
 
   return res.json({
     dynamic_variables: {      id,
                               from,
                               to,
                               city,
-                              open: isOpen ? 'true' : 'false',
-                              early: isEarly ? 'true' : 'false',
-                              late: isLate ? 'true' : 'false',
-                              weekday: isWeekend ? 'true' : 'false', }
+                              isOpen: isOpen ? 'yes' : 'no',
+                              isEarly: isEarly ? 'yes' : 'no',
+                              isLate: isLate ? 'yes' : 'no',
+                              isWeekday: isWeekday ? 'yes' : 'no' }
   });
 });
 
-/*app.post('/inbound-call', (req, res) => {
+app.post('/inbound-call', (req, res) => {
   app.post('/inbound-call', (req, res) => {
-  console.log('[DEBUG] raw body:', JSON.stringify(req.body, null, 2));
 
 
   const payload =
@@ -320,7 +297,7 @@ app.post('/inbound-call', async (req, res) => {
     return res.status(400).json({ error: 'Unrecognized payload shape.' });
   }
 
-  const { from_number: from = '', to_number: to = '', agent_id: id = '' } = payload;
+  const {from_number: from, to_number: to, agent_id: id} = payload;
   const areaCode = from.slice(2, 5);
   const city     = areaCodeMap[areaCode] ?? 'Unknown';
   const hostZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -355,9 +332,13 @@ app.post('/inbound-call', async (req, res) => {
     return res.json({ dynamic_variables, debug: { from, areaCode, city, hour, isOpen, isEarly, isLate, isWeekday } });
   }
   return res.json({ dynamic_variables });
-});});*/
+});});
 
-// --------------  start server -------------
+app.post('/do_not_personalize', (req, res) => { return "yes";})
+
+
+
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server listening on port ${PORT}`);
 });
