@@ -279,7 +279,7 @@ app.post('/inbound-call', async (req, res) => {
   const hostZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
-  const areaCode  = from.slice(2, 5);
+  const areaCode  = from_number.slice(2, 5);
   const city      = areaCodeMap[areaCode] ?? 'Unknown';
   const now       = new Date();
   const day       = now.getDay();  
