@@ -245,50 +245,6 @@ const areaCodeMap = {
 };
 
 // provider’s production webhook
-app.post('/inbound-call', async (req, res) => {
-  console.log('📥 FULL WEBHOOK BODY:', JSON.stringify(req.body, null, 2));
-  const payload = req.body.call_inbound || req.body.call;
-
-  // bail out immediately if we didn’t even get a payload
-  if (!payload) {
-    console.error('No payload at either call_inbound or call!', req.body)
-    return res.status(400).json({ error: 'Malformed request: no payload.' })
-  }
-  const { from_number: from, to_number: to, agent_id: id } = payload;
-
-  const hostZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-  const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
-  const areaCode  = from_number.slice(2, 5);
-  const city      = areaCodeMap[areaCode] ?? 'Unknown';
-  const now       = new Date();
-  const day       = now.getDay();  
-
-  const est   = new Date(
-    new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
-  );
-  const hostDate   = new Date(
-    new Date().toLocaleString('en-US', { timeZone: hostZone })
-  );
-  const hour  = est.getHours();
-  const local_hour = hostDate.getHours();
-  const isEarly = local_hour <= 9;
-  const isLate = local_hour >= 20;
-  const isWeekday = day >= 1 && day <= 5;
-  const isOpen = (hour >= 9 && hour < 18) && isWeekday;
-  console.log('🔍 debug inbound-call vars →', { from, to, id, city, hour, isOpen, isEarly, isLate, isWeekday });
-
-  return res.json({
-    dynamic_variables: {      id,
-                              from,
-                              to,
-                              city,
-                              isOpen: isOpen ? 'yes' : 'no',
-                              isEarly: isEarly ? 'yes' : 'no',
-                              isLate: isLate ? 'yes' : 'no',
-                              isWeekday: isWeekday ? 'yes' : 'no' }
-  });
-});
 
 app.post('/inbound-call', (req, res) => {
   app.post('/inbound-call', (req, res) => {
