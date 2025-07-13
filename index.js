@@ -364,7 +364,7 @@ app.post('/inbound-call', async (req, res) => {
   /* ---------- Wyoming ---------- */
   "307": "Cheyenne",
 };
-  console.log('📥 FULL WEBHOOK BODY:', JSON.stringify(req.body, null, 2));
+  console.log(payload);
   const payload = req.body.call_inbound || req.body.call;
 
   // bail out immediately if we didn’t even get a payload
