@@ -264,24 +264,24 @@ app.post('/inbound-call', (req, res) => {
     new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
   );
   const local_hour = hostZone.getHours();
-  const isEarly = local_hour <= 9;
-  isLate = local_hour >= 20;
+  const early = local_hour <= 9;
+  late = local_hour >= 20;
   const hour  = est.getHours();
   const day = now.getDay();
-  const isWeekday = day >= 1 && day <= 5;
-  const isOpen = (hour >= 9 && hour < 18) && isWeekday;
+  const weekday = day >= 1 && day <= 5;
+  const open = (hour >= 9 && hour < 18) && isWeekday;
 
   // 👀 see what you got
-  console.table({ from, to, id, city, hour, isOpen, isEarly, isLate, isWeekday });
+  console.table({ from, to, id, city, hour, open, early, late, weekday });
 
   const dynamic_variables = { id,
                               from,
                               to,
                               city,
-                              isOpen: isOpen ? 'yes' : 'no',
-                              isEarly: isEarly ? 'yes' : 'no',
-                              isLate: isLate ? 'yes' : 'no',
-                              isWeekday: isWeekday ? 'yes' : 'no' };
+                              open: isOpen ? 'yes' : 'no',
+                              early: early ? 'yes' : 'no',
+                              late: late ? 'yes' : 'no',
+                              weekday: weekday ? 'yes' : 'no' };
 
   // In dev, send the debug data back too
   if (process.env.NODE_ENV !== 'production') {
@@ -289,8 +289,6 @@ app.post('/inbound-call', (req, res) => {
   }
   return res.json({ dynamic_variables });
 });});
-
-app.post('/do_not_personalize', (req, res) => { return "yes";})
 
 
 
