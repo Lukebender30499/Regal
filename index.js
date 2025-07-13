@@ -19,24 +19,49 @@ const ARTICLE_PREFIX = 'https://www.lemonade.com/homeowners/explained/';
 
 app.post('/get-article', async (req, res) => {
   const title = req.body.article.title;
-  console.log('Extracted title:', title);
   if (!title) return res.status(400).json({ error: 'Missing sentence parameter' });
 
   const lower_title = title.toLowerCase()
     .replace(/[^\w\s-]/g, '') // remove punctuation
     .replace(/\s+/g, '-')     // spaces to dashes
     .replace(/-+/g, '-');     // collapse multiple dashes
-  console.log(lower_title);
+
   const url = ARTICLE_PREFIX + lower_title + '/';
     try {
     const response = await axios.get(url);
     const html = response.data;
-    console.log(html);
-    const document = new JSDOM(html);
-    const content = dom.window.document;
-  } catch (error) { return res.status(500).json({ error: 'Could not fetch article'})}
-    return res.json({ article: { title: content.slice(0, 2000) } });
-})
+
+    let articleEl = document.querySelector('article');
+
+    // Attempt 2: Fallback to known container classes
+    if (!articleEl) {
+      articleEl = document.querySelector('.post-body') ||
+                  document.querySelector('[class*="post-body"]');
+    }
+    if (articleEl) {
+      // Extract text while trimming empty lines
+      const rawText = articleEl.textContent || '';
+      const cleanText = rawText
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .join('\n\n');
+
+      console.log(cleanText); // Or return it
+      return res.json({ article: { title: cleanText } });
+    } else {
+      console.warn('Could not locate main article content.');
+      return res.json({ article: { title: null } });
+    }
+
+  } catch (err) {
+    console.error('Error:', err.message);
+    return res.json({ article: { title: null } });
+
+
+  }
+}
+)
 
 
 // --------------  data ---------------------
