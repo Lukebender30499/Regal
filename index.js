@@ -247,7 +247,6 @@ const areaCodeMap = {
 // provider’s production webhook
 
 app.post('/inbound-call', (req, res) => {
-  app.post('/inbound-call', (req, res) => {
 
 
   const payload = req.body.call_inbound;
@@ -283,12 +282,8 @@ app.post('/inbound-call', (req, res) => {
                               late: late ? 'yes' : 'no',
                               weekday: weekday ? 'yes' : 'no' };
 
-  // In dev, send the debug data back too
-  if (process.env.NODE_ENV !== 'production') {
-    return res.json({ dynamic_variables, debug: { from, areaCode, city, hour, isOpen, isEarly, isLate, isWeekday } });
-  }
   return res.json({ dynamic_variables });
-});});
+});
 
 
 
