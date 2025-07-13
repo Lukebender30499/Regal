@@ -364,7 +364,7 @@ app.post('/inbound-call', async (req, res) => {
   /* ---------- Wyoming ---------- */
   "307": "Cheyenne",
 };
-  console.log(payload);
+  //console.log(payload);
   const payload = req.body.call_inbound || req.body.call;
 
   // bail out immediately if we didn’t even get a payload
