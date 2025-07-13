@@ -247,6 +247,7 @@ app.post('/inbound-call', (req, res) => {
 };
 
   const payload = req.body.call_inbound || req.body.call;
+  console.log('📥 /inbound-call payload:', JSON.stringify(payload, null, 2));
 
   const {from_number: from, to_number: to, agent_id: id} = payload;
   const areaCode = from.slice(2, 5);
