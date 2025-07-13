@@ -3,6 +3,9 @@
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
+import cheerio from 'cheerio';
+import { JSDOM } from 'jsdom';
+import { Readability } from '@mozilla/readability';
 // --------------  app setup --------------
 
 
