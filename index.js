@@ -18,10 +18,10 @@ app.use(express.json());  // parse incoming JSON bodies
 const ARTICLE_PREFIX = 'https://www.lemonade.com/homeowners/explained/';
 
 app.post('/get-article', async (req, res) => {
-  const body = req.article?.body;
-  if (!body) return res.status(400).json({ error: 'Missing title parameter' });
+  const title = req.article.title;
+  if (!title) return res.status(400).json({ error: 'Missing title parameter' });
 
-  const lower_title = body.toLowerCase()
+  const lower_title = title.toLowerCase()
     .replace(/[^\w\s-]/g, '') // remove punctuation
     .replace(/\s+/g, '-')     // spaces to dashes
     .replace(/-+/g, '-');     // collapse multiple dashes
