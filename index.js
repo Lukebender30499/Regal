@@ -305,7 +305,7 @@ app.post('/inbound-call', async (req, res) => {
   });
 });
 
-app.post('/inbound-call', (req, res) => {
+/*app.post('/inbound-call', (req, res) => {
   app.post('/inbound-call', (req, res) => {
   console.log('[DEBUG] raw body:', JSON.stringify(req.body, null, 2));
 
@@ -355,7 +355,7 @@ app.post('/inbound-call', (req, res) => {
     return res.json({ dynamic_variables, debug: { from, areaCode, city, hour, isOpen, isEarly, isLate, isWeekday } });
   }
   return res.json({ dynamic_variables });
-});});
+});});*/
 
 // --------------  start server -------------
 app.listen(PORT, '0.0.0.0', () => {
