@@ -3,9 +3,6 @@
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
-//import cheerio from 'cheerio';
-import { JSDOM } from 'jsdom';
-import { Readability } from '@mozilla/readability';
 // --------------  app setup --------------
 
 
@@ -16,7 +13,12 @@ app.use(cors());          // allow cross-origin calls
 app.use(express.json());  // parse incoming JSON bodies
 //app.use('/get-article', express.text({ type: 'text/plain' }));
 
-const areaCodeMap = {
+
+
+// provider’s production webhook
+
+app.post('/inbound-call', (req, res) => {
+  const areaCodeMap = {
   /* ---------- Alabama ---------- */
   "205": "Birmingham", "251": "Mobile", "256": "Huntsville",
   "334": "Montgomery", "938": "Huntsville",
@@ -244,17 +246,11 @@ const areaCodeMap = {
   "307": "Cheyenne",
 };
 
-// provider’s production webhook
-
-app.post('/inbound-call', (req, res) => {
-
-
-  const payload = req.body.call_inbound;
+  const payload = req.body.call_inbound || req.body.call;
 
   const {from_number: from, to_number: to, agent_id: id} = payload;
-  console.table({ from, to, id});
   const areaCode = from.slice(2, 5);
-  const city     = areaCodeMap[areaCode] ?? 'Unknown';
+  const city     = areaCodeMap[areaCode] ?? '000';
   const hostZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
@@ -264,7 +260,7 @@ app.post('/inbound-call', (req, res) => {
   );
   const local_hour = hostZone.getHours();
   const early = local_hour <= 9;
-  late = local_hour >= 20;
+  const late = local_hour >= 20;
   const hour  = est.getHours();
   const day = now.getDay();
   const weekday = day >= 1 && day <= 5;
@@ -277,7 +273,7 @@ app.post('/inbound-call', (req, res) => {
                               from,
                               to,
                               city,
-                              open: isOpen ? 'yes' : 'no',
+                              open: open ? 'yes' : 'no',
                               early: early ? 'yes' : 'no',
                               late: late ? 'yes' : 'no',
                               weekday: weekday ? 'yes' : 'no' };
