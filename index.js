@@ -28,6 +28,12 @@ app.post('/get-article', async (req, res) => {
     .replace(/-+/g, '-');     // collapse multiple dashes
   console.log(lower_title);
   const url = ARTICLE_PREFIX + lower_title + '/';
+   try {
+    const response = await axios.get(url);
+    const html = response.data;
+    console.log(html);
+  } catch (error) {
+    console.error('Error fetching HTML:', error.message);
   let content = '';
   try {
   const dom     = new JSDOM(html, { url });
