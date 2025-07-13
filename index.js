@@ -32,37 +32,10 @@ app.post('/get-article', async (req, res) => {
     const response = await axios.get(url);
     const html = response.data;
     console.log(html);
-  } catch (error) {
-    console.error('Error fetching HTML:', error.message);
-  }
-  let content = '';
-  try {
-  const dom     = new JSDOM(html, { url });
-  const art     = new Readability(dom.window.document).parse();
-  content       = art?.textContent?.trim() || '';
-} catch (err) {
-  if (err.response) {
-    console.log('Fetch failed, status:', err.response.status);
-    console.log('Response body snippet:', err.response.data.slice(0,200));
-  } else {
-    console.log('Fetch error (no response):', err.message);
-  }
-  return res.status(500).json({ error: 'Could not fetch article', url });
-}
-
-  if (!content) {
-    let best = '';
-    const $ = cheerio.load(html);
-    $('p').each((i, el) => {
-      const txt = $(el).text().trim();
-      if (txt.length > best.length) best = txt;
-  });
-  content = best;
-}
-  if (!content) {
-    return res.status(500).json({ error: 'Could not fetch article', url});
-  }
-  return res.json({ article: { title: content.slice(0, 2000) } });
+    const document = new JSDOM(html);
+    const content = dom.window.document;
+  } catch (error) { return res.status(500).json({ error: 'Could not fetch article'})}
+    return res.json({ article: { title: content.slice(0, 2000) } });
 })
 
 
