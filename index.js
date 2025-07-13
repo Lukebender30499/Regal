@@ -274,7 +274,7 @@ app.post('/inbound-call', async (req, res) => {
     console.error('No payload at either call_inbound or call!', req.body)
     return res.status(400).json({ error: 'Malformed request: no payload.' })
   }
-  const { from: from_number, to: to_number, id: agent_id } = payload;
+  const { from_number: from, to_number: to, agent_id: id } = payload;
   
   const hostZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
