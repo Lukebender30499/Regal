@@ -22,59 +22,57 @@ app.post('/get-article', async (req, res) => {
   const { name, args } = req.body;
 
   if (name === 'get-article') {
-    // extract title from args and run your fetch logic
     const title = args.article?.body || args.article?.title;
     if (!title) return res.status(400).json({ error: 'Missing title' });
-    // …fetch + parse…
+
     const lower_title = title.toLowerCase()
-    .replace(/[^\w\s-]/g, '') // remove punctuation
-    .replace(/\s+/g, '-')     // spaces to dashes
-    .replace(/-+/g, '-');     // collapse multiple dashes
+      .replace(/[^\w\s-]/g, '') // remove punctuation
+      .replace(/\s+/g, '-')     // spaces to dashes
+      .replace(/-+/g, '-');     // collapse multiple dashes
 
-  const url = ARTICLE_PREFIX + lower_title + '/';
+    const url = ARTICLE_PREFIX + lower_title + '/';
+    
     try {
-    const response = await axios.get(url)
-    } catch (err) { res.json({
-      article: { body: "Sorry, I can’t fetch that article right now." }
-    })
+      const response = await axios.get(url);
+      const html = response.data;
+      const dom = new JSDOM(html);
+      const document = dom.window.document;
+      const container = document.querySelector('article') || document.body;
+      let startEl = container.querySelector('h1');
+      if (!startEl) startEl = container.querySelector('p');
+
+      if (!startEl) {
+        console.warn('No <h1> or <p> found–giving up.');
+        return res.json({ article: { body: null } });
+      }
+
+      let text = startEl.textContent.trim();
+      let node = startEl.nextSibling;
+      while (node && text.split(/\s+/).length < 200) {
+        if (node.textContent) {
+          text += ' ' + node.textContent.trim();
+        }
+        node = node.nextSibling;
+      }
+
+      // Trim to exactly 1000 words (as per your slice)
+      const body = text
+        .split(/\s+/)
+        .slice(0, 1000)
+        .join(' ');
+
+      return res.json({
+        article: { body: body } // ✅ Fixed: was 'snippet'
+      });
+
+    } catch (err) {
+      console.error('Error:', err.message);
+      return res.json({ 
+        article: { body: "Sorry, I can't fetch that article right now." }
+      }); // ✅ Fixed: added return statement
     }
-    try{
-    const html = response.data;
-    const dom = new JSDOM(html);
-    const document = dom.window.document;
-    const container = document.querySelector('article') || document.title;
-    let startEl = container.querySelector('h1');
-    if (!startEl) startEl = container.querySelector('p');
-
-    if (!startEl) {
-     console.warn('No <h1> or <p> found–giving up.');
-     return res.json({ article: { title: null } });
-}  let text = startEl.textContent.trim();
-let node = startEl.nextSibling;
-while (node && text.split(/\s+/).length < 200) {
-  if (node.textContent) {
-    text += ' ' + node.textContent.trim();
   }
-  node = node.nextSibling;
-}
-
-// 4) Trim to exactly 200 words
-const body = text
-  .split(/\s+/)
-  .slice(0, 1000)
-  .join(' ');
-
-// 5) Return snippet
-return res.json({
-  article: { body: snippet }
 });
-
-  } catch (err) {
-    console.error('Error:', err.message);
-    return res.json({ article: { body: null } });
-  }
-}
-})
   
 
 /*
@@ -409,7 +407,9 @@ app.post('/inbound-call', async (req, res) => {
 
 
 
-app.post('/do_not_personalize', (req, res) => { return "yes";})
+app.post('/do_not_personalize', (req, res) => { 
+  res.json({ result: "yes" });
+});
 
 
 
