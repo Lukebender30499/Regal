@@ -32,31 +32,33 @@ app.post('/get-article', async (req, res) => {
     const html = response.data;
     const dom = new JSDOM(html);
     const document = dom.window.document;
+    const container = document.querySelector('article') || document.body;
+    let startEl = container.querySelector('h1');
+    if (!startEl) startEl = container.querySelector('p');
 
-    let article_full = document.querySelector('article')
-      || document.querySelector('.post-body')
-      || document.querySelector('[class*="post-body"]');
+    if (!startEl) {
+     console.warn('No <h1> or <p> found–giving up.');
+     return res.json({ article: { title: null } });
+}  let text = startEl.textContent.trim();
+let node = startEl.nextSibling;
+while (node && text.split(/\s+/).length < 200) {
+  if (node.textContent) {
+    text += ' ' + node.textContent.trim();
+  }
+  node = node.nextSibling;
+}
 
-    // Attempt 2: Fallback to known container classes
-    if (!article_full)  {
-      console.warn('Could not locate main article content.');
-      return res.json({ article: { title: null } });
-    }
-    const share = article_full.querySelector('.post-body__ContentShare-sc-1gg9kd8-4');
-    let textBeforeShare = '';
-    for (let node of articleEl.childNodes) {
-      if (node === shareEl) break;
-      // only grab textual content from elements and text nodes
-      textBeforeShare += node.textContent ?? '';
-    }
-    const content = textBeforeShare
-      .split('\n')
-      .map(l => l.trim())
-      .filter(l => l.length > 0)
-      .join('\n\n');
-      // Extract text while trimming empty lines
-    return res.json({ article: { title: cleanText.slice(0,2000) } });
-    
+// 4) Trim to exactly 200 words
+const snippet = text
+  .split(/\s+/)
+  .slice(0, 200)
+  .join(' ');
+
+// 5) Return snippet
+return res.json({
+  article: { title: snippet }
+});
+
   } catch (err) {
     console.error('Error:', err.message);
     return res.json({ article: { title: null } });
