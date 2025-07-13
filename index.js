@@ -18,7 +18,7 @@ app.use(express.json());  // parse incoming JSON bodies
 const ARTICLE_PREFIX = 'https://www.lemonade.com/homeowners/explained/';
 
 app.post('/get-article', async (req, res) => {
-  const title = req.body.article.title;
+  const title = req.body.article?.title;
   if (!title) return res.status(400).json({ error: 'Missing title parameter' });
 
   const lower_title = title.toLowerCase()
