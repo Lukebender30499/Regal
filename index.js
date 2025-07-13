@@ -16,7 +16,7 @@ app.use(cors());          // allow cross-origin calls
 app.use(express.json());  // parse incoming JSON bodies
 app.use('/get-article', express.text({ type: 'text/plain' }));
 
-const ARTICLE_PREFIX = 'https://www.lemonade.com/homeowners/explained/';
+/*const ARTICLE_PREFIX = 'https://www.lemonade.com/homeowners/explained/';
 
 app.post('/get-article', async (req, res) => {
   const { name, args } = req.body;
