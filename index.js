@@ -16,21 +16,24 @@ const ARTICLE_PREFIX = 'https://www.lemonade.com/homeowners/explained/';
 
 app.post('/get-article', async (req, res) => {
   const title = req.body.article.title;
+  console.log('Extracted title:', title);
   if (!title) return res.status(400).json({ error: 'Missing sentence parameter' });
 
   const lower_title = title.toLowerCase()
     .replace(/[^\w\s-]/g, '') // remove punctuation
     .replace(/\s+/g, '-')     // spaces to dashes
     .replace(/-+/g, '-');     // collapse multiple dashes
-  
+  console.log(lower_title);
   const url = ARTICLE_PREFIX + lower_title + '/';
+  console.log(url);
 
   try {
     const { data: html } = await axios.get(url);
     const $ = cheerio.load(html);
+    console.log(data);
     // Simple content extraction: get all text inside main article (adjust selector as needed)
     const content = $('main').text() || $('article').text() || $('body').text();
-
+      console.log(content);
     return res.json({
       article: {
         title: content.trim().slice(0, 2000) // Or whatever you want returned
