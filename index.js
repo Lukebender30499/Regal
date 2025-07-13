@@ -30,7 +30,15 @@ app.post('/get-article', async (req, res) => {
   const dom     = new JSDOM(html, { url });
   const art     = new Readability(dom.window.document).parse();
   content       = art?.textContent?.trim() || '';
-} catch {}
+} catch (err) {
+  if (err.response) {
+    console.log('Fetch failed, status:', err.response.status);
+    console.log('Response body snippet:', err.response.data.slice(0,200));
+  } else {
+    console.log('Fetch error (no response):', err.message);
+  }
+  return res.status(500).json({ error: 'Could not fetch article', url });
+}
 
   if (!content) {
     let best = '';
