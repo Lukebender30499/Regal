@@ -5,12 +5,41 @@ import cors from 'cors';
 import axios from 'axios';
 // --------------  app setup --------------
 
-const app  = express();
-const PORT = process.env.PORT || 3000;   // Render injects its own PORT
 
+const PORT = process.env.PORT || 3000;   // Render injects its own PORT
+const app  = express();
 // --------------  middleware --------------
 app.use(cors());          // allow cross-origin calls
 app.use(express.json());  // parse incoming JSON bodies
+
+const ARTICLE_PREFIX = 'https://www.lemonade.com/homeowners/explained/';
+
+app.post('/get-article', async (req, res) => {
+  const title = req.body.article.title;
+  if (!title) return res.status(400).json({ error: 'Missing sentence parameter' });
+
+  const lower_title = title.toLowerCase()
+    .replace(/[^\w\s-]/g, '') // remove punctuation
+    .replace(/\s+/g, '-')     // spaces to dashes
+    .replace(/-+/g, '-');     // collapse multiple dashes
+  
+  const url = ARTICLE_PREFIX + lower_title + '/';
+
+  try {
+    const { data: html } = await axios.get(url);
+    const $ = cheerio.load(html);
+    // Simple content extraction: get all text inside main article (adjust selector as needed)
+    const content = $('main').text() || $('article').text() || $('body').text();
+
+    return res.json({
+      article: {
+        title: content.trim().slice(0, 2000) // Or whatever you want returned
+      }
+    });
+  } catch (e) {
+    return res.status(500).json({ error: 'Could not fetch article', url});
+  }
+})
 
 
 // --------------  data ---------------------
