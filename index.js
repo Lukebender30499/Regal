@@ -287,10 +287,10 @@ app.post('/inbound-call', async (req, res) => {
   );
   const hour  = est.getHours();
   const local_hour = hostDate.getHours();
-  const early = local_hour <= 9;
-  const late = local_hour >= 20;
-  const weekday = day >= 1 && day <= 5;
-  const open = (hour >= 9 && hour < 18) && weekday;
+  const isEarly = local_hour <= 9;
+  const isLate = local_hour >= 20;
+  const isWeekday = day >= 1 && day <= 5;
+  const isOpen = (hour >= 9 && hour < 18) && weekday;
   console.log('🔍 debug inbound-call vars →', { from, to, id, city, hour, open, early, late, weekday });
 
   return res.json({
@@ -298,10 +298,10 @@ app.post('/inbound-call', async (req, res) => {
                               from,
                               to,
                               city,
-                              open: open ? 'yes' : 'no',
-                              early: early ? 'yes' : 'no',
-                              late: late ? 'yes' : 'no',
-                              weekday: weekday ? 'yes' : 'no' }
+                              open: isOpen ? 'yes' : 'no',
+                              early: isEarly ? 'yes' : 'no',
+                              late: isLate ? 'yes' : 'no',
+                              weekday: isWeekend ? 'yes' : 'no' }
   });
 });
 
