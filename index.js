@@ -25,24 +25,26 @@ app.post('/get-article', async (req, res) => {
     .replace(/-+/g, '-');     // collapse multiple dashes
   console.log(lower_title);
   const url = ARTICLE_PREFIX + lower_title + '/';
-  console.log(url);
-
+  let content = '';
   try {
-    const { data: html } = await axios.get(url);
-    console.log('HTML snippet:', html.slice(0, 500));
+  const dom     = new JSDOM(html, { url });
+  const art     = new Readability(dom.window.document).parse();
+  content       = art?.textContent?.trim() || '';
+} catch {}
+
+  if (!content) {
+    let best = '';
     const $ = cheerio.load(html);
-    console.log(data);
-    // Simple content extraction: get all text inside main article (adjust selector as needed)
-    const content = $('main').text() || $('article').text() || $('body').text();
-      console.log(content);
-    return res.json({
-      article: {
-        title: content.trim().slice(0, 2000) // Or whatever you want returned
-      }
-    });
-  } catch (e) {
+    $('p').each((i, el) => {
+      const txt = $(el).text().trim();
+      if (txt.length > best.length) best = txt;
+  });
+  content = best;
+}
+  if (!content) {
     return res.status(500).json({ error: 'Could not fetch article', url});
   }
+  return res.json({ article: { title: content.slice(0, 2000) } });
 })
 
 
