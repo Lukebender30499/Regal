@@ -242,28 +242,6 @@ const areaCodeMap = {
   "307": "Cheyenne",
 };
 
-
-// --------------  routes -------------------
-
-// sanity-check root
-app.get('/', (_, res) => res.json({ message: 'Webhook server is running!' }));
-
-axios.post('http://localhost:3000/inbound-call', {
-  call_inbound: {
-    from_number: '+12025550123',
-    to_number:   '+14155550123',
-    agent_id:    'agent_42'
-  }
-})
-.then(res => console.log('✅  Server response:', res.data))
-.catch(err => console.error('❌  Error:', err.response?.data || err.message));
-
-// generic webhook endpoint
-app.post('/webhook', (req, res) => {
-  console.log('Inbound payload:', req.body);
-  res.sendStatus(200);
-});
-
 // provider’s production webhook
 app.post('/inbound-call', async (req, res) => {
   console.log('📥 FULL WEBHOOK BODY:', JSON.stringify(req.body, null, 2));
@@ -312,7 +290,6 @@ app.post('/inbound-call', async (req, res) => {
 
 app.post('/inbound-call', (req, res) => {
   app.post('/inbound-call', (req, res) => {
-  console.log('[DEBUG] raw body:', JSON.stringify(req.body, null, 2));
 
 
   const payload =
@@ -367,7 +344,7 @@ app.post('/inbound-call', (req, res) => {
 
  
 
-app.post('/sendLink', (req, res) => {
+/*app.post('/sendLink', (req, res) => {
   const {title} = req.body;
   if (!title) {
       return res.status(400).json({ error: 'Missing title' });
