@@ -250,17 +250,10 @@ app.post('/inbound-call', (req, res) => {
   app.post('/inbound-call', (req, res) => {
 
 
-  const payload =
-        req.body.call_inbound ??
-        req.body.dynamic_variables ??
-        req.body;
-
-  if (!payload || typeof payload !== 'object') {
-    console.error('No recognizable payload:', req.body);
-    return res.status(400).json({ error: 'Unrecognized payload shape.' });
-  }
+  const payload = req.body.call_inbound;
 
   const {from_number: from, to_number: to, agent_id: id} = payload;
+  console.table({ from, to, id});
   const areaCode = from.slice(2, 5);
   const city     = areaCodeMap[areaCode] ?? 'Unknown';
   const hostZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
