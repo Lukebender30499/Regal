@@ -339,6 +339,9 @@ app.post('/inbound-call', (req, res) => {
   return res.json({ dynamic_variables });
 });});
 
+app.post('/do_not_personalize', (req, res) => { return "yes";})
+
+
 
 
 app.listen(PORT, '0.0.0.0', () => {
