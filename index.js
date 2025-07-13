@@ -51,7 +51,7 @@ while (node && text.split(/\s+/).length < 200) {
 // 4) Trim to exactly 200 words
 const snippet = text
   .split(/\s+/)
-  .slice(0, 200)
+  .slice(0, 1000)
   .join(' ');
 
 // 5) Return snippet
