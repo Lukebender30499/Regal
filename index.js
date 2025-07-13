@@ -398,10 +398,10 @@ app.post('/inbound-call', async (req, res) => {
                               from,
                               to,
                               city,
-                              open: isOpen ? 'yes' : 'no',
-                              early: isEarly ? 'yes' : 'no',
-                              late: isLate ? 'yes' : 'no',
-                              weekday: isWeekday ? 'yes' : 'no' }
+                              open: open ? 'yes' : 'no',
+                              early: early ? 'yes' : 'no',
+                              late: late ? 'yes' : 'no',
+                              weekday: weekday ? 'yes' : 'no' }
   });
 });
 
