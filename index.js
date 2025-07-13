@@ -14,10 +14,13 @@ const app  = express();
 // --------------  middleware --------------
 app.use(cors());          // allow cross-origin calls
 app.use(express.json());  // parse incoming JSON bodies
+app.use('/get-article', express.text({ type: 'text/plain' }));
 
 const ARTICLE_PREFIX = 'https://www.lemonade.com/homeowners/explained/';
 
 app.post('/get-article', async (req, res) => {
+  console.log('Headers:', req.headers['content-type']);
+  console.log('Raw body:', typeof req.body, req.body);
   let title;
   if (typeof req.body === 'string') {
     // raw string, possibly JSON-quoted
