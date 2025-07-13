@@ -290,8 +290,8 @@ app.post('/inbound-call', async (req, res) => {
   const isEarly = local_hour <= 9;
   const isLate = local_hour >= 20;
   const isWeekday = day >= 1 && day <= 5;
-  const isOpen = (hour >= 9 && hour < 18) && weekday;
-  console.log('🔍 debug inbound-call vars →', { from, to, id, city, hour, open, early, late, weekday });
+  const isOpen = (hour >= 9 && hour < 18) && isWeekday;
+  console.log('🔍 debug inbound-call vars →', {from,to,id,city,hour,isOpen,isEarly,isLate,isWeekday});
 
   return res.json({
     dynamic_variables: {      id,
