@@ -1,50 +1,81 @@
+// server.js
+// --------------  dependencies --------------
 import express from 'express';
+import cors from 'cors';
 import axios from 'axios';
+//import cheerio from 'cheerio';
 import { JSDOM } from 'jsdom';
+import { Readability } from '@mozilla/readability';
+// --------------  app setup --------------
 
-const app = express();
 
-// 📈 Increase the JSON body limit so the full transcript won't blow up
-app.use(express.json({ limit: '1mb' }));
+const PORT = process.env.PORT || 3000;   // Render injects its own PORT
+const app  = express();
 // --------------  middleware --------------
 app.use(cors());          // allow cross-origin calls
 app.use(express.json());  // parse incoming JSON bodies
+app.use('/get-article', express.text({ type: 'text/plain' }));
 
 const ARTICLE_PREFIX = 'https://www.lemonade.com/homeowners/explained/';
 
-async function getArticleHandler(req, res) {
-  const args = req.body.args || {};
-  const articleParam = args.article || {};
-  const title = articleParam.body || articleParam.title;
-  if (!title) {
-    return res.status(400).json({ error: 'Missing title parameter' });
-  }
+app.post('/get-article', async (req, res) => {
+  const { name, args } = req.body;
+
+  if (name === 'get-article') {
+    // extract title from args and run your fetch logic
+    const title = args.article?.body || args.article?.title;
+    if (!title) return res.status(400).json({ error: 'Missing title' });
+    // …fetch + parse…
     const lower_title = title.toLowerCase()
     .replace(/[^\w\s-]/g, '') // remove punctuation
     .replace(/\s+/g, '-')     // spaces to dashes
     .replace(/-+/g, '-');     // collapse multiple dashes
 
   const url = ARTICLE_PREFIX + lower_title + '/';
-   try {
-    const { data: html } = await axios.get(url, {
-      headers: {
-        // pretend to be a browser so you don’t get 502s
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ' +
-          'AppleWebKit/537.36 (KHTML, like Gecko) ' +
-          'Chrome/115.0.0.0 Safari/537.36',
-      }
+    try {
+    const response = await axios.get(url)
+    } catch (err) { res.json({
+      article: { body: "Sorry, I can’t fetch that article right now." }
     })
+    }
+    try{
+    const html = response.data;
     const dom = new JSDOM(html);
-    const doc = dom.window.document;
-    const container = doc.querySelector('article') || doc.body;
-    let text = container.textContent.trim().split(/\s+/).slice(0, 600).join(' ');
-    return res.json({ article: { title: text } });
-  } catch (err){
-    console.warn(`Failed to fetch ${url}:`, err.message);
-    return res.status(502).json({ error: 'Could not fetch article' });
+    const document = dom.window.document;
+    const container = document.querySelector('article') || document.title;
+    let startEl = container.querySelector('h1');
+    if (!startEl) startEl = container.querySelector('p');
+
+    if (!startEl) {
+     console.warn('No <h1> or <p> found–giving up.');
+     return res.json({ article: { title: null } });
+}  let text = startEl.textContent.trim();
+let node = startEl.nextSibling;
+while (node && text.split(/\s+/).length < 200) {
+  if (node.textContent) {
+    text += ' ' + node.textContent.trim();
+  }
+  node = node.nextSibling;
+}
+
+// 4) Trim to exactly 200 words
+const body = text
+  .split(/\s+/)
+  .slice(0, 1000)
+  .join(' ');
+
+// 5) Return snippet
+return res.json({
+  article: { body: snippet }
+});
+
+  } catch (err) {
+    console.error('Error:', err.message);
+    return res.json({ article: { body: null } });
   }
 }
+})
+  
 
 /*
   const lower_title = title.toLowerCase()
@@ -103,9 +134,9 @@ return res.json({
 
 // --------------  data ---------------------
 
-function inboundCallHandler(req, res) {
-// provider’s production webhook
 
+// provider’s production webhook
+app.post('/inbound-call', async (req, res) => {
   const areaCodeMap = {
   /* ---------- Alabama ---------- */
   "205": "Birmingham", "251": "Mobile", "256": "Huntsville",
@@ -374,23 +405,15 @@ function inboundCallHandler(req, res) {
                               isLate: isLate ? 'yes' : 'no',
                               isWeekday: isWeekday ? 'yes' : 'no' }
   });
-};
+});
 
 
 
 app.post('/do_not_personalize', (req, res) => { return "yes";})
 
-app.post('/webhook', async (req, res) => {
-  const name = req.body.name;
 
-  if (name === 'get-article') {
-    return getArticleHandler(req, res);
-  } else {
-    // treat everything else as an inbound-call event
-    return inboundCallHandler(req, res);
-  }
+
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server listening on port ${PORT}`);
 });
-
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
-
