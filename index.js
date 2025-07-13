@@ -15,6 +15,11 @@ const app  = express();
 app.use(cors());          // allow cross-origin calls
 app.use(express.json());  // parse incoming JSON bodies
 app.use('/get-article', express.text({ type: 'text/plain' }));
+// For inbound-call events:
+app.post('/webhook/inbound', inboundCallHandler);
+
+// For your custom function:
+app.post('/webhook/get-article', getArticleHandler);
 
 const ARTICLE_PREFIX = 'https://www.lemonade.com/homeowners/explained/';
 
