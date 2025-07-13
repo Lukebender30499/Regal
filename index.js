@@ -28,7 +28,27 @@ app.post('/get-article', async (req, res) => {
 
   const url = ARTICLE_PREFIX + lower_title + '/';
     try {
-    const response = await axios.get(url);
+      try{
+          const response = await axios.get(url, {
+      headers: {
+        'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) ' +
+      'AppleWebKit/537.36 (KHTML, like Gecko) ' +
+      'Chrome/115.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml'
+      }
+    });
+      } catch (err) {
+         if (err.response?.status >= 500) {
+         console.warn(`Upstream 5xx (${err.response.status}) for ${url}`); 
+         return res.json({
+      article: { title: "Sorry, I can’t fetch that article right now." }
+    });
+      }
+      throw err;
+      }
+  
+    
     const html = response.data;
     const dom = new JSDOM(html);
     const document = dom.window.document;
