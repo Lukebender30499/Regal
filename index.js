@@ -29,6 +29,7 @@ app.post('/get-article', async (req, res) => {
 
   try {
     const { data: html } = await axios.get(url);
+    console.log('HTML snippet:', html.slice(0, 500));
     const $ = cheerio.load(html);
     console.log(data);
     // Simple content extraction: get all text inside main article (adjust selector as needed)
