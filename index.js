@@ -1,18 +1,24 @@
 // server.js
 // --------------  dependencies --------------
-const express = require('express');
-const cors    = require('cors');
-
+import express from 'express';
+import cors from 'cors';
+import axios from 'axios';
 // --------------  app setup --------------
-const app  = express();
-const PORT = process.env.PORT || 3000;   // Render injects its own PORT
 
+
+const PORT = process.env.PORT || 3000;   // Render injects its own PORT
+const app  = express();
 // --------------  middleware --------------
 app.use(cors());          // allow cross-origin calls
 app.use(express.json());  // parse incoming JSON bodies
+//app.use('/get-article', express.text({ type: 'text/plain' }));
 
-// --------------  data ---------------------
-const areaCodeMap = {
+
+
+// provider’s production webhook
+
+app.post('/inbound-call', (req, res) => {
+  const areaCodeMap = {
   /* ---------- Alabama ---------- */
   "205": "Birmingham", "251": "Mobile", "256": "Huntsville",
   "334": "Montgomery", "938": "Huntsville",
@@ -240,44 +246,48 @@ const areaCodeMap = {
   "307": "Cheyenne",
 };
 
-// --------------  routes -------------------
+  const payload = req.body.call_inbound || req.body.call;
 
-// sanity-check root
-app.get('/', (_, res) => res.json({ message: 'Webhook server is running!' }));
+  const {from_number: from, to_number: to, agent_id: id} = payload;
+  const areaCode = from.slice(2, 5);
+  const city     = areaCodeMap[areaCode] ?? '000';
+  const now       = new Date();
+  const hostZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-// generic webhook endpoint
-app.post('/webhook', (req, res) => {
-  console.log('Inbound payload:', req.body);
-  res.sendStatus(200);
-});
-
-// provider’s production webhook
-app.post('/inbound-call', async (req, res) => {
-  const from      = req.body.call_inbound.from_number || "";
-  const areaCode  = from.slice(2, 5);
-  const city      = areaCodeMap[areaCode] ?? 'Unknown';
-  const id        = req.body.call_inbound.agent_id;
-  const to        = req.body.call_inbound.to_number;
-
+  const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
+  console.log(`Local time in ${hostZone}:`, localString);
   const est   = new Date(
     new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
   );
+  const hostDate   = new Date(
+    new Date().toLocaleString('en-US', { timeZone: hostZone })
+  );
+  const local_hour = hostDate.getHours();
+  const early = local_hour <= 9;
+  const late = local_hour >= 20;
   const hour  = est.getHours();
-  const isOpen = hour >= 9 && hour < 18;
+  const day = now.getDay();
+  const weekday = day >= 1 && day <= 5;
+  const open = (hour >= 9 && hour < 18) && weekday;
 
-  res.json({
-    dynamic_variables: {
-      id,
-      from,
-      to,
-      city,
-      isOpen: isOpen ? 'yes' : 'no',
-      currentHour: hour.toString()
-    }
-  });
+  // 👀 see what you got
+  console.table({ from, to, id, city, hour, open, early, late, weekday });
+
+  const dynamic_variables = { id,
+                              from,
+                              to,
+                              city,
+                              open: open ? 'yes' : 'no',
+                              early: early ? 'yes' : 'no',
+                              late: late ? 'yes' : 'no',
+                              weekday: weekday ? 'yes' : 'no' };
+
+  return res.json({ dynamic_variables });
 });
 
-// --------------  start server -------------
+
+
+
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server listening on port ${PORT}`);
 });
