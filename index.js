@@ -49,19 +49,19 @@ while (node && text.split(/\s+/).length < 200) {
 }
 
 // 4) Trim to exactly 200 words
-const snippet = text
+const body = text
   .split(/\s+/)
   .slice(0, 1000)
   .join(' ');
 
 // 5) Return snippet
 return res.json({
-  article: { title: snippet }
+  article: { body: snippet }
 });
 
   } catch (err) {
     console.error('Error:', err.message);
-    return res.json({ article: { title: null } });
+    return res.json({ article: { body: null } });
 
 
   }
