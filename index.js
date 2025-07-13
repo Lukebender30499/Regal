@@ -325,7 +325,7 @@ app.post('/inbound-call', (req, res) => {
     return res.status(400).json({ error: 'Unrecognized payload shape.' });
   }
 
-  const { from_number: from = '', to_number: to = '', agent_id: id = '' } = payload;
+  const {from_number: from, to_number: to, agent_id: id} = payload;
   const areaCode = from.slice(2, 5);
   const city     = areaCodeMap[areaCode] ?? 'Unknown';
   const hostZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
