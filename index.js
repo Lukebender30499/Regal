@@ -30,6 +30,8 @@ app.post('/get-article', async (req, res) => {
     try {
     const response = await axios.get(url);
     const html = response.data;
+    const dom = new JSDOM(html);
+    const document = dom.window.document;
 
     let articleEl = document.querySelector('article');
 
