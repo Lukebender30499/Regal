@@ -453,7 +453,7 @@ app.post('/inbound-call', async (req, res) => {
 
   const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
   const areaCode  = from.slice(2, 5);
-  const [city, state, hostZone]      = areaCodeMap[areaCode] ?? 'Unknown';
+  const [city, state, hostZone] = areaCodeMap[areaCode] ?? 'Unknown';
   const now = new Date();
   const day = now.getDay();  
 
@@ -469,7 +469,7 @@ app.post('/inbound-call', async (req, res) => {
   const isLate = local_hour >= 20;
   const isWeekday = day >= 1 && day <= 5;
   const isOpen = (hour >= 9 && hour <= 20) && isWeekday;
-  console.log('🔍 debug inbound-call vars →', { from, to, id, city, state, hour, local_hour, isOpen, isEarly, isLate, isWeekday });
+  console.log('🔍 debug inbound-call vars →', { from, to, id, city, state, hour, hostZone, isOpen, isEarly, isLate, isWeekday });
   const customer_number = "4";
   return res.json({
     dynamic_variables: {      id,
@@ -502,17 +502,18 @@ app.post('/inbound-call', (req, res) => {
 
   const {from_number: from, to_number: to, agent_id: id} = payload;
   const areaCode = from.slice(2, 5);
-  const [city, state, hostZone]      = areaCodeMap[areaCode] ?? 'Unknown';
+  const [city, state, hostZone] = areaCodeMap[areaCode] ?? 'Unknown';
 
-  const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
-  console.log(`Local time in ${hostZone}:`, localString);
-  const est      = new Date(
+  const est   = new Date(
     new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
   );
-  const local_hour = hostZone.getHours();
+  const hostDate   = new Date(
+    new Date().toLocaleString('en-US', { timeZone: hostZone })
+  );
+  const hour  = est.getHours();
+  const local_hour = hostDate.getHours();
   const isEarly = local_hour <= 9;
   const isLate = local_hour >= 20;
-  const hour  = est.getHours();
   const day = now.getDay();
   const isWeekday = day >= 1 && day <= 5;
   const isOpen = (hour >= 9 && hour <= 20) && isWeekday;
