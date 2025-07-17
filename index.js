@@ -313,7 +313,7 @@ app.post('/inbound-call', (req, res) => {
   );
   const local_hour = hostZone.getHours();
   const isEarly = local_hour <= 9;
-  isLate = local_hour >= 20;
+  const isLate = local_hour >= 20;
   const hour  = est.getHours();
   const day = now.getDay();
   const isWeekday = day >= 1 && day <= 5;
