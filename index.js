@@ -12,230 +12,430 @@ app.use(express.json());  // parse incoming JSON bodies
 // --------------  data ---------------------
 const areaCodeMap = {
   /* ---------- Alabama ---------- */
-  "205": ["Birmingham", "Alabama"], "251": ["Mobile", "Alabama"], "256": ["Huntsville", "Alabama"],
-  "334": ["Montgomery", "Alabama"], "938": ["Huntsville", "Alabama"],
+  "205": ["Birmingham", "Alabama", "America/Chicago"],
+  "251": ["Mobile", "Alabama", "America/Chicago"],
+  "256": ["Huntsville", "Alabama", "America/Chicago"],
+  "334": ["Montgomery", "Alabama", "America/Chicago"],
+  "938": ["Huntsville", "Alabama", "America/Chicago"],
 
   /* ---------- Alaska ---------- */
-  "907": ["Anchorage", "Alaska"],
+  "907": ["Anchorage", "Alaska", "America/Anchorage"],
 
   /* ---------- Arizona ---------- */
-  "480": ["Mesa", "Arizona"], "520": ["Tucson", "Arizona"], "602": ["Phoenix", "Arizona"],
-  "623": ["Glendale", "Arizona"], "928": ["Flagstaff", "Arizona"],
+  "480": ["Mesa", "Arizona", "America/Phoenix"],
+  "520": ["Tucson", "Arizona", "America/Phoenix"],
+  "602": ["Phoenix", "Arizona", "America/Phoenix"],
+  "623": ["Glendale", "Arizona", "America/Phoenix"],
+  "928": ["Flagstaff", "Arizona", "America/Phoenix"],
 
   /* ---------- Arkansas ---------- */
-  "479": ["Fort Smith", "Arkansas"], "501": ["Little Rock", "Arkansas"], "870": ["Jonesboro", "Arkansas"],
+  "479": ["Fort Smith", "Arkansas", "America/Chicago"],
+  "501": ["Little Rock", "Arkansas", "America/Chicago"],
+  "870": ["Jonesboro", "Arkansas", "America/Chicago"],
 
   /* ---------- California ---------- */
-  "209": ["Stockton", "California"], "213": ["Los Angeles", "California"], "279": ["Sacramento", "California"],
-  "310": ["Santa Monica", "California"], "323": ["Los Angeles", "California"], "408": ["San Jose", "California"],
-  "415": ["San Francisco", "California"], "424": ["Inglewood", "California"], "442": ["Oceanside", "California"],
-  "510": ["Oakland", "California"], "530": ["Chico", "California"], "559": ["Fresno", "California"],
-  "562": ["Long Beach", "California"], "619": ["San Diego", "California"], "626": ["Pasadena", "California"],
-  "650": ["San Mateo", "California"], "657": ["Anaheim", "California"], "661": ["Bakersfield", "California"],
-  "669": ["San Jose", "California"], "707": ["Santa Rosa", "California"], "714": ["Santa Ana", "California"],
-  "747": ["Burbank", "California"], "760": ["Escondido", "California"], "805": ["Ventura", "California"],
-  "818": ["Glendale", "California"], "820": ["Ventura", "California"], "831": ["Salinas", "California"],
-  "858": ["La Jolla", "California"], "909": ["San Bernardino", "California"], "916": ["Sacramento", "California"],
-  "925": ["Concord", "California"], "949": ["Irvine", "California"], "951": ["Riverside", "California"],
+  "209": ["Stockton", "California", "America/Los_Angeles"],
+  "213": ["Los Angeles", "California", "America/Los_Angeles"],
+  "279": ["Sacramento", "California", "America/Los_Angeles"],
+  "310": ["Santa Monica", "California", "America/Los_Angeles"],
+  "323": ["Los Angeles", "California", "America/Los_Angeles"],
+  "408": ["San Jose", "California", "America/Los_Angeles"],
+  "415": ["San Francisco", "California", "America/Los_Angeles"],
+  "424": ["Inglewood", "California", "America/Los_Angeles"],
+  "442": ["Oceanside", "California", "America/Los_Angeles"],
+  "510": ["Oakland", "California", "America/Los_Angeles"],
+  "530": ["Chico", "California", "America/Los_Angeles"],
+  "559": ["Fresno", "California", "America/Los_Angeles"],
+  "562": ["Long Beach", "California", "America/Los_Angeles"],
+  "619": ["San Diego", "California", "America/Los_Angeles"],
+  "626": ["Pasadena", "California", "America/Los_Angeles"],
+  "650": ["San Mateo", "California", "America/Los_Angeles"],
+  "657": ["Anaheim", "California", "America/Los_Angeles"],
+  "661": ["Bakersfield", "California", "America/Los_Angeles"],
+  "669": ["San Jose", "California", "America/Los_Angeles"],
+  "707": ["Santa Rosa", "California", "America/Los_Angeles"],
+  "714": ["Santa Ana", "California", "America/Los_Angeles"],
+  "747": ["Burbank", "California", "America/Los_Angeles"],
+  "760": ["Escondido", "California", "America/Los_Angeles"],
+  "805": ["Ventura", "California", "America/Los_Angeles"],
+  "818": ["Glendale", "California", "America/Los_Angeles"],
+  "820": ["Ventura", "California", "America/Los_Angeles"],
+  "831": ["Salinas", "California", "America/Los_Angeles"],
+  "858": ["La Jolla", "California", "America/Los_Angeles"],
+  "909": ["San Bernardino", "California", "America/Los_Angeles"],
+  "916": ["Sacramento", "California", "America/Los_Angeles"],
+  "925": ["Concord", "California", "America/Los_Angeles"],
+  "949": ["Irvine", "California", "America/Los_Angeles"],
+  "951": ["Riverside", "California", "America/Los_Angeles"],
 
   /* ---------- Colorado ---------- */
-  "303": ["Denver", "Colorado"], "719": ["Colorado Springs", "Colorado"], "720": ["Denver", "Colorado"],
-  "970": ["Fort Collins", "Colorado"], "983": ["Denver", "Colorado"],
+  "303": ["Denver", "Colorado", "America/Denver"],
+  "719": ["Colorado Springs", "Colorado", "America/Denver"],
+  "720": ["Denver", "Colorado", "America/Denver"],
+  "970": ["Fort Collins", "Colorado", "America/Denver"],
+  "983": ["Denver", "Colorado", "America/Denver"],
 
   /* ---------- Connecticut ---------- */
-  "203": ["Bridgeport", "Connecticut"], "475": ["New Haven", "Connecticut"],
-  "860": ["Hartford", "Connecticut"],  "959": ["New London", "Connecticut"],
+  "203": ["Bridgeport", "Connecticut", "America/New_York"],
+  "475": ["New Haven", "Connecticut", "America/New_York"],
+  "860": ["Hartford", "Connecticut", "America/New_York"],
+  "959": ["New London", "Connecticut", "America/New_York"],
 
   /* ---------- Delaware ---------- */
-  "302": ["Wilmington", "Delaware"],
+  "302": ["Wilmington", "Delaware", "America/New_York"],
 
   /* ---------- Florida ---------- */
-  "239": ["Fort Myers", "Florida"], "305": ["Miami", "Florida"], "321": ["Orlando", "Florida"],
-  "352": ["Gainesville", "Florida"], "386": ["Daytona Beach", "Florida"], "407": ["Orlando", "Florida"],
-  "561": ["West Palm Beach", "Florida"], "627": ["Orlando", "Florida"],
-  "727": ["St. Petersburg", "Florida"], "754": ["Fort Lauderdale", "Florida"],
-  "772": ["Port St. Lucie", "Florida"], "786": ["Miami", "Florida"], "813": ["Tampa", "Florida"],
-  "850": ["Tallahassee", "Florida"], "863": ["Lakeland", "Florida"], "904": ["Jacksonville", "Florida"],
-  "941": ["Sarasota", "Florida"],   "954": ["Fort Lauderdale", "Florida"],
+  "239": ["Fort Myers", "Florida", "America/New_York"],
+  "305": ["Miami", "Florida", "America/New_York"],
+  "321": ["Orlando", "Florida", "America/New_York"],
+  "352": ["Gainesville", "Florida", "America/New_York"],
+  "386": ["Daytona Beach", "Florida", "America/New_York"],
+  "407": ["Orlando", "Florida", "America/New_York"],
+  "561": ["West Palm Beach", "Florida", "America/New_York"],
+  "627": ["Orlando", "Florida", "America/New_York"],
+  "727": ["St. Petersburg", "Florida", "America/New_York"],
+  "754": ["Fort Lauderdale", "Florida", "America/New_York"],
+  "772": ["Port St. Lucie", "Florida", "America/New_York"],
+  "786": ["Miami", "Florida", "America/New_York"],
+  "813": ["Tampa", "Florida", "America/New_York"],
+  "850": ["Tallahassee", "Florida", "America/New_York"],
+  "863": ["Lakeland", "Florida", "America/New_York"],
+  "904": ["Jacksonville", "Florida", "America/New_York"],
+  "941": ["Sarasota", "Florida", "America/New_York"],
+  "954": ["Fort Lauderdale", "Florida", "America/New_York"],
 
   /* ---------- Georgia ---------- */
-  "229": ["Albany", "Georgia"], "404": ["Atlanta", "Georgia"], "470": ["Atlanta", "Georgia"],
-  "478": ["Macon", "Georgia"],  "678": ["Atlanta", "Georgia"], "706": ["Augusta", "Georgia"],
-  "762": ["Columbus", "Georgia"], "770": ["Atlanta", "Georgia"], "912": ["Savannah", "Georgia"],
+  "229": ["Albany", "Georgia", "America/New_York"],
+  "404": ["Atlanta", "Georgia", "America/New_York"],
+  "470": ["Atlanta", "Georgia", "America/New_York"],
+  "478": ["Macon", "Georgia", "America/New_York"],
+  "678": ["Atlanta", "Georgia", "America/New_York"],
+  "706": ["Augusta", "Georgia", "America/New_York"],
+  "762": ["Columbus", "Georgia", "America/New_York"],
+  "770": ["Atlanta", "Georgia", "America/New_York"],
+  "912": ["Savannah", "Georgia", "America/New_York"],
 
   /* ---------- Hawaii ---------- */
-  "808": ["Honolulu", "Hawaii"],
+  "808": ["Honolulu", "Hawaii", "Pacific/Honolulu"],
 
   /* ---------- Idaho ---------- */
-  "208": ["Boise", "Idaho"], "986": ["Boise", "Idaho"],
+  "208": ["Boise", "Idaho", "America/Boise"],
+  "986": ["Boise", "Idaho", "America/Boise"],
 
   /* ---------- Illinois ---------- */
-  "217": ["Springfield", "Illinois"], "224": ["Waukegan", "Illinois"], "309": ["Peoria", "Illinois"],
-  "312": ["Chicago", "Illinois"],    "331": ["Aurora", "Illinois"],   "447": ["Springfield", "Illinois"],
-  "464": ["Chicago", "Illinois"],    "618": ["East St. Louis", "Illinois"], "630": ["Naperville", "Illinois"],
-  "708": ["Cicero", "Illinois"],     "730": ["Peoria", "Illinois"],  "773": ["Chicago", "Illinois"],
-  "779": ["Rockford", "Illinois"],   "815": ["Rockford", "Illinois"], "847": ["Evanston", "Illinois"],
-  "872": ["Chicago", "Illinois"],
+  "217": ["Springfield", "Illinois", "America/Chicago"],
+  "224": ["Waukegan", "Illinois", "America/Chicago"],
+  "309": ["Peoria", "Illinois", "America/Chicago"],
+  "312": ["Chicago", "Illinois", "America/Chicago"],
+  "331": ["Aurora", "Illinois", "America/Chicago"],
+  "447": ["Springfield", "Illinois", "America/Chicago"],
+  "464": ["Chicago", "Illinois", "America/Chicago"],
+  "618": ["East St. Louis", "Illinois", "America/Chicago"],
+  "630": ["Naperville", "Illinois", "America/Chicago"],
+  "708": ["Cicero", "Illinois", "America/Chicago"],
+  "730": ["Peoria", "Illinois", "America/Chicago"],
+  "773": ["Chicago", "Illinois", "America/Chicago"],
+  "779": ["Rockford", "Illinois", "America/Chicago"],
+  "815": ["Rockford", "Illinois", "America/Chicago"],
+  "847": ["Evanston", "Illinois", "America/Chicago"],
+  "872": ["Chicago", "Illinois", "America/Chicago"],
 
   /* ---------- Indiana ---------- */
-  "219": ["Gary", "Indiana"], "260": ["Fort Wayne", "Indiana"], "317": ["Indianapolis", "Indiana"],
-  "463": ["Indianapolis", "Indiana"], "574": ["South Bend", "Indiana"],
-  "765": ["Muncie", "Indiana"], "812": ["Evansville", "Indiana"], "930": ["Evansville", "Indiana"],
+  "219": ["Gary", "Indiana", "America/Chicago"],
+  "260": ["Fort Wayne", "Indiana", "America/New_York"],
+  "317": ["Indianapolis", "Indiana", "America/New_York"],
+  "463": ["Indianapolis", "Indiana", "America/New_York"],
+  "574": ["South Bend", "Indiana", "America/New_York"],
+  "765": ["Muncie", "Indiana", "America/New_York"],
+  "812": ["Evansville", "Indiana", "America/Chicago"],
+  "930": ["Evansville", "Indiana", "America/Chicago"],
 
   /* ---------- Iowa ---------- */
-  "319": ["Cedar Rapids", "Iowa"], "515": ["Des Moines", "Iowa"],
-  "563": ["Davenport", "Iowa"],  "641": ["Mason City", "Iowa"], "712": ["Sioux City", "Iowa"],
+  "319": ["Cedar Rapids", "Iowa", "America/Chicago"],
+  "515": ["Des Moines", "Iowa", "America/Chicago"],
+  "563": ["Davenport", "Iowa", "America/Chicago"],
+  "641": ["Mason City", "Iowa", "America/Chicago"],
+  "712": ["Sioux City", "Iowa", "America/Chicago"],
 
   /* ---------- Kansas ---------- */
-  "316": ["Wichita", "Kansas"], "620": ["Dodge City", "Kansas"],
-  "785": ["Topeka", "Kansas"], "913": ["Kansas City", "Kansas"],
+  "316": ["Wichita", "Kansas", "America/Chicago"],
+  "620": ["Dodge City", "Kansas", "America/Chicago"],
+  "785": ["Topeka", "Kansas", "America/Chicago"],
+  "913": ["Kansas City", "Kansas", "America/Chicago"],
 
   /* ---------- Kentucky ---------- */
-  "270": ["Bowling Green", "Kentucky"], "364": ["Bowling Green", "Kentucky"],
-  "502": ["Louisville", "Kentucky"],    "606": ["Ashland", "Kentucky"], "859": ["Lexington", "Kentucky"],
+  "270": ["Bowling Green", "Kentucky", "America/Chicago"],
+  "364": ["Bowling Green", "Kentucky", "America/Chicago"],
+  "502": ["Louisville", "Kentucky", "America/New_York"],
+  "606": ["Ashland", "Kentucky", "America/New_York"],
+  "859": ["Lexington", "Kentucky", "America/New_York"],
 
   /* ---------- Louisiana ---------- */
-  "225": ["Baton Rouge", "Louisiana"], "318": ["Shreveport", "Louisiana"],
-  "337": ["Lafayette", "Louisiana"],  "504": ["New Orleans", "Louisiana"], "985": ["Houma", "Louisiana"],
+  "225": ["Baton Rouge", "Louisiana", "America/Chicago"],
+  "318": ["Shreveport", "Louisiana", "America/Chicago"],
+  "337": ["Lafayette", "Louisiana", "America/Chicago"],
+  "504": ["New Orleans", "Louisiana", "America/Chicago"],
+  "985": ["Houma", "Louisiana", "America/Chicago"],
 
   /* ---------- Maine ---------- */
-  "207": ["Portland", "Maine"],
+  "207": ["Portland", "Maine", "America/New_York"],
 
   /* ---------- Maryland ---------- */
-  "240": ["Silver Spring", "Maryland"], "301": ["Frederick", "Maryland"],
-  "410": ["Baltimore", "Maryland"],     "443": ["Baltimore", "Maryland"], "667": ["Baltimore", "Maryland"],
+  "240": ["Silver Spring", "Maryland", "America/New_York"],
+  "301": ["Frederick", "Maryland", "America/New_York"],
+  "410": ["Baltimore", "Maryland", "America/New_York"],
+  "443": ["Baltimore", "Maryland", "America/New_York"],
+  "667": ["Baltimore", "Maryland", "America/New_York"],
 
   /* ---------- Massachusetts ---------- */
-  "339": ["Waltham", "Massachusetts"], "351": ["Lowell", "Massachusetts"], "413": ["Springfield", "Massachusetts"],
-  "508": ["Worcester", "Massachusetts"],"617": ["Boston", "Massachusetts"],"774": ["Worcester", "Massachusetts"],
-  "781": ["Lynn", "Massachusetts"],     "857": ["Boston", "Massachusetts"], "978": ["Lowell", "Massachusetts"],
+  "339": ["Waltham", "Massachusetts", "America/New_York"],
+  "351": ["Lowell", "Massachusetts", "America/New_York"],
+  "413": ["Springfield", "Massachusetts", "America/New_York"],
+  "508": ["Worcester", "Massachusetts", "America/New_York"],
+  "617": ["Boston", "Massachusetts", "America/New_York"],
+  "774": ["Worcester", "Massachusetts", "America/New_York"],
+  "781": ["Lynn", "Massachusetts", "America/New_York"],
+  "857": ["Boston", "Massachusetts", "America/New_York"],
+  "978": ["Lowell", "Massachusetts", "America/New_York"],
 
   /* ---------- Michigan ---------- */
-  "231": ["Muskegon", "Michigan"],"248": ["Troy", "Michigan"],"269": ["Kalamazoo", "Michigan"],
-  "313": ["Detroit", "Michigan"], "517": ["Lansing", "Michigan"],"586": ["Warren", "Michigan"],
-  "616": ["Grand Rapids", "Michigan"],"734": ["Ann Arbor", "Michigan"],"810": ["Flint", "Michigan"],
-  "906": ["Marquette", "Michigan"],"947": ["Troy", "Michigan"],
+  "231": ["Muskegon", "Michigan", "America/New_York"],
+  "248": ["Troy", "Michigan", "America/New_York"],
+  "269": ["Kalamazoo", "Michigan", "America/New_York"],
+  "313": ["Detroit", "Michigan", "America/New_York"],
+  "517": ["Lansing", "Michigan", "America/New_York"],
+  "586": ["Warren", "Michigan", "America/New_York"],
+  "616": ["Grand Rapids", "Michigan", "America/New_York"],
+  "734": ["Ann Arbor", "Michigan", "America/New_York"],
+  "810": ["Flint", "Michigan", "America/New_York"],
+  "906": ["Marquette", "Michigan", "America/Chicago"],
+  "947": ["Troy", "Michigan", "America/New_York"],
 
   /* ---------- Minnesota ---------- */
-  "218": ["Duluth", "Minnesota"], "320": ["St. Cloud", "Minnesota"], "507": ["Rochester", "Minnesota"],
-  "612": ["Minneapolis", "Minnesota"],"651": ["St. Paul", "Minnesota"],"763": ["Brooklyn Park", "Minnesota"],
-  "952": ["Bloomington", "Minnesota"],
+  "218": ["Duluth", "Minnesota", "America/Chicago"],
+  "320": ["St. Cloud", "Minnesota", "America/Chicago"],
+  "507": ["Rochester", "Minnesota", "America/Chicago"],
+  "612": ["Minneapolis", "Minnesota", "America/Chicago"],
+  "651": ["St. Paul", "Minnesota", "America/Chicago"],
+  "763": ["Brooklyn Park", "Minnesota", "America/Chicago"],
+  "952": ["Bloomington", "Minnesota", "America/Chicago"],
 
   /* ---------- Mississippi ---------- */
-  "228": ["Biloxi", "Mississippi"],"601": ["Jackson", "Mississippi"],"662": ["Tupelo", "Mississippi"],"769": ["Jackson", "Mississippi"],
+  "228": ["Biloxi", "Mississippi", "America/Chicago"],
+  "601": ["Jackson", "Mississippi", "America/Chicago"],
+  "662": ["Tupelo", "Mississippi", "America/Chicago"],
+  "769": ["Jackson", "Mississippi", "America/Chicago"],
 
   /* ---------- Missouri ---------- */
-  "314": ["St. Louis", "Missouri"],"417": ["Springfield", "Missouri"],"573": ["Columbia", "Missouri"],
-  "636": ["St. Charles", "Missouri"],"660": ["Sedalia", "Missouri"],"816": ["Kansas City", "Missouri"],
-  "975": ["Kansas City", "Missouri"],
+  "314": ["St. Louis", "Missouri", "America/Chicago"],
+  "417": ["Springfield", "Missouri", "America/Chicago"],
+  "573": ["Columbia", "Missouri", "America/Chicago"],
+  "636": ["St. Charles", "Missouri", "America/Chicago"],
+  "660": ["Sedalia", "Missouri", "America/Chicago"],
+  "816": ["Kansas City", "Missouri", "America/Chicago"],
+  "975": ["Kansas City", "Missouri", "America/Chicago"],
 
   /* ---------- Montana ---------- */
-  "406": ["Billings", "Montana"],
+  "406": ["Billings", "Montana", "America/Denver"],
 
   /* ---------- Nebraska ---------- */
-  "308": ["North Platte", "Nebraska"],"402": ["Omaha", "Nebraska"],"531": ["Omaha", "Nebraska"],
+  "308": ["North Platte", "Nebraska", "America/Chicago"],
+  "402": ["Omaha", "Nebraska", "America/Chicago"],
+  "531": ["Omaha", "Nebraska", "America/Chicago"],
 
   /* ---------- Nevada ---------- */
-  "702": ["Las Vegas", "Nevada"],"725": ["Las Vegas", "Nevada"],"775": ["Reno", "Nevada"],
+  "702": ["Las Vegas", "Nevada", "America/Los_Angeles"],
+  "725": ["Las Vegas", "Nevada", "America/Los_Angeles"],
+  "775": ["Reno", "Nevada", "America/Los_Angeles"],
 
   /* ---------- New Hampshire ---------- */
-  "603": ["Manchester", "New Hampshire"],
+  "603": ["Manchester", "New Hampshire", "America/New_York"],
 
   /* ---------- New Jersey ---------- */
-  "201": ["Jersey City", "New Jersey"],"551": ["Jersey City", "New Jersey"],"609": ["Trenton", "New Jersey"],
-  "640": ["Trenton", "New Jersey"],"732": ["Toms River", "New Jersey"],"848": ["New Brunswick", "New Jersey"],
-  "856": ["Camden", "New Jersey"],"862": ["Newark", "New Jersey"],"908": ["Elizabeth", "New Jersey"],"973": ["Newark", "New Jersey"],
+  "201": ["Jersey City", "New Jersey", "America/New_York"],
+  "551": ["Jersey City", "New Jersey", "America/New_York"],
+  "609": ["Trenton", "New Jersey", "America/New_York"],
+  "640": ["Trenton", "New Jersey", "America/New_York"],
+  "732": ["Toms River", "New Jersey", "America/New_York"],
+  "848": ["New Brunswick", "New Jersey", "America/New_York"],
+  "856": ["Camden", "New Jersey", "America/New_York"],
+  "862": ["Newark", "New Jersey", "America/New_York"],
+  "908": ["Elizabeth", "New Jersey", "America/New_York"],
+  "973": ["Newark", "New Jersey", "America/New_York"],
 
   /* ---------- New Mexico ---------- */
-  "505": ["Albuquerque", "New Mexico"],"575": ["Las Cruces", "New Mexico"],
+  "505": ["Albuquerque", "New Mexico", "America/Denver"],
+  "575": ["Las Cruces", "New Mexico", "America/Denver"],
 
   /* ---------- New York ---------- */
-  "212": ["New York", "New York"],"315": ["Syracuse", "New York"],"332": ["New York", "New York"],"347": ["Bronx", "New York"],
-  "516": ["Hempstead", "New York"],"518": ["Albany", "New York"],"585": ["Rochester", "New York"],
-  "607": ["Binghamton", "New York"],"631": ["Islip", "New York"],"646": ["New York", "New York"],
-  "680": ["Syracuse", "New York"],"716": ["Buffalo", "New York"],"718": ["Queens", "New York"],
-  "838": ["Albany", "New York"],"845": ["Poughkeepsie", "New York"],"914": ["Yonkers", "New York"],
-  "917": ["New York", "New York"],"929": ["Brooklyn", "New York"],"934": ["Ronkonkoma", "New York"],
+  "212": ["New York", "New York", "America/New_York"],
+  "315": ["Syracuse", "New York", "America/New_York"],
+  "332": ["New York", "New York", "America/New_York"],
+  "347": ["Bronx", "New York", "America/New_York"],
+  "516": ["Hempstead", "New York", "America/New_York"],
+  "518": ["Albany", "New York", "America/New_York"],
+  "585": ["Rochester", "New York", "America/New_York"],
+  "607": ["Binghamton", "New York", "America/New_York"],
+  "631": ["Islip", "New York", "America/New_York"],
+  "646": ["New York", "New York", "America/New_York"],
+  "680": ["Syracuse", "New York", "America/New_York"],
+  "716": ["Buffalo", "New York", "America/New_York"],
+  "718": ["Queens", "New York", "America/New_York"],
+  "838": ["Albany", "New York", "America/New_York"],
+  "845": ["Poughkeepsie", "New York", "America/New_York"],
+  "914": ["Yonkers", "New York", "America/New_York"],
+  "917": ["New York", "New York", "America/New_York"],
+  "929": ["Brooklyn", "New York", "America/New_York"],
+  "934": ["Ronkonkoma", "New York", "America/New_York"],
 
   /* ---------- North Carolina ---------- */
-  "252": ["Greenville", "North Carolina"],"336": ["Greensboro", "North Carolina"],"704": ["Charlotte", "North Carolina"],
-  "743": ["Greensboro", "North Carolina"],"828": ["Asheville", "North Carolina"],"910": ["Wilmington", "North Carolina"],
-  "980": ["Charlotte", "North Carolina"],"984": ["Raleigh", "North Carolina"],"919": ["Raleigh", "North Carolina"],
+  "252": ["Greenville", "North Carolina", "America/New_York"],
+  "336": ["Greensboro", "North Carolina", "America/New_York"],
+  "704": ["Charlotte", "North Carolina", "America/New_York"],
+  "743": ["Greensboro", "North Carolina", "America/New_York"],
+  "828": ["Asheville", "North Carolina", "America/New_York"],
+  "910": ["Wilmington", "North Carolina", "America/New_York"],
+  "980": ["Charlotte", "North Carolina", "America/New_York"],
+  "984": ["Raleigh", "North Carolina", "America/New_York"],
+  "919": ["Raleigh", "North Carolina", "America/New_York"],
 
   /* ---------- North Dakota ---------- */
-  "701": ["Fargo", "North Dakota"],
+  "701": ["Fargo", "North Dakota", "America/Chicago"],
 
   /* ---------- Ohio ---------- */
-  "216": ["Cleveland", "Ohio"],"220": ["Columbus", "Ohio"],"234": ["Akron", "Ohio"],
-  "283": ["Cincinnati", "Ohio"],"330": ["Akron", "Ohio"],"380": ["Columbus", "Ohio"],
-  "419": ["Toledo", "Ohio"],"440": ["Lorain", "Ohio"],"513": ["Cincinnati", "Ohio"],
-  "567": ["Toledo", "Ohio"],"614": ["Columbus", "Ohio"],"740": ["Newark", "Ohio"],
-  "937": ["Dayton", "Ohio"],
+  "216": ["Cleveland", "Ohio", "America/New_York"],
+  "220": ["Columbus", "Ohio", "America/New_York"],
+  "234": ["Akron", "Ohio", "America/New_York"],
+  "283": ["Cincinnati", "Ohio", "America/New_York"],
+  "330": ["Akron", "Ohio", "America/New_York"],
+  "380": ["Columbus", "Ohio", "America/New_York"],
+  "419": ["Toledo", "Ohio", "America/New_York"],
+  "440": ["Lorain", "Ohio", "America/New_York"],
+  "513": ["Cincinnati", "Ohio", "America/New_York"],
+  "567": ["Toledo", "Ohio", "America/New_York"],
+  "614": ["Columbus", "Ohio", "America/New_York"],
+  "740": ["Newark", "Ohio", "America/New_York"],
+  "937": ["Dayton", "Ohio", "America/New_York"],
 
   /* ---------- Oklahoma ---------- */
-  "405": ["Oklahoma City", "Oklahoma"],"539": ["Tulsa", "Oklahoma"],"572": ["Oklahoma City", "Oklahoma"],
-  "580": ["Lawton", "Oklahoma"],"918": ["Tulsa", "Oklahoma"],
+  "405": ["Oklahoma City", "Oklahoma", "America/Chicago"],
+  "539": ["Tulsa", "Oklahoma", "America/Chicago"],
+  "572": ["Oklahoma City", "Oklahoma", "America/Chicago"],
+  "580": ["Lawton", "Oklahoma", "America/Chicago"],
+  "918": ["Tulsa", "Oklahoma", "America/Chicago"],
 
   /* ---------- Oregon ---------- */
-  "458": ["Eugene", "Oregon"],"503": ["Portland", "Oregon"],"541": ["Eugene", "Oregon"],"971": ["Portland", "Oregon"],
+  "458": ["Eugene", "Oregon", "America/Los_Angeles"],
+  "503": ["Portland", "Oregon", "America/Los_Angeles"],
+  "541": ["Eugene", "Oregon", "America/Los_Angeles"],
+  "971": ["Portland", "Oregon", "America/Los_Angeles"],
 
   /* ---------- Pennsylvania ---------- */
-  "215": ["Philadelphia", "Pennsylvania"],"223": ["Harrisburg", "Pennsylvania"],"267": ["Philadelphia", "Pennsylvania"],
-  "272": ["Wilkes-Barre", "Pennsylvania"],"412": ["Pittsburgh", "Pennsylvania"],"445": ["Philadelphia", "Pennsylvania"],
-  "484": ["Allentown", "Pennsylvania"],"570": ["Scranton", "Pennsylvania"],"582": ["Erie", "Pennsylvania"],
-  "610": ["Allentown", "Pennsylvania"],"717": ["Harrisburg", "Pennsylvania"],"724": ["Greensburg", "Pennsylvania"],
-  "878": ["Pittsburgh", "Pennsylvania"],
+  "215": ["Philadelphia", "Pennsylvania", "America/New_York"],
+  "223": ["Harrisburg", "Pennsylvania", "America/New_York"],
+  "267": ["Philadelphia", "Pennsylvania", "America/New_York"],
+  "272": ["Wilkes-Barre", "Pennsylvania", "America/New_York"],
+  "412": ["Pittsburgh", "Pennsylvania", "America/New_York"],
+  "445": ["Philadelphia", "Pennsylvania", "America/New_York"],
+  "484": ["Allentown", "Pennsylvania", "America/New_York"],
+  "570": ["Scranton", "Pennsylvania", "America/New_York"],
+  "582": ["Erie", "Pennsylvania", "America/New_York"],
+  "610": ["Allentown", "Pennsylvania", "America/New_York"],
+  "717": ["Harrisburg", "Pennsylvania", "America/New_York"],
+  "724": ["Greensburg", "Pennsylvania", "America/New_York"],
+  "878": ["Pittsburgh", "Pennsylvania", "America/New_York"],
 
   /* ---------- Rhode Island ---------- */
-  "401": ["Providence", "Rhode Island"],
+  "401": ["Providence", "Rhode Island", "America/New_York"],
 
   /* ---------- South Carolina ---------- */
-  "803": ["Columbia", "South Carolina"],"839": ["Columbia", "South Carolina"],"843": ["Charleston", "South Carolina"],
-  "854": ["Charleston", "South Carolina"],"864": ["Greenville", "South Carolina"],
+  "803": ["Columbia", "South Carolina", "America/New_York"],
+  "839": ["Columbia", "South Carolina", "America/New_York"],
+  "843": ["Charleston", "South Carolina", "America/New_York"],
+  "854": ["Charleston", "South Carolina", "America/New_York"],
+  "864": ["Greenville", "South Carolina", "America/New_York"],
 
   /* ---------- South Dakota ---------- */
-  "605": ["Sioux Falls", "South Dakota"],
+  "605": ["Sioux Falls", "South Dakota", "America/Chicago"],
 
   /* ---------- Tennessee ---------- */
-  "423": ["Chattanooga", "Tennessee"],"615": ["Nashville", "Tennessee"],"629": ["Nashville", "Tennessee"],
-  "731": ["Jackson", "Tennessee"],"865": ["Knoxville", "Tennessee"],"901": ["Memphis", "Tennessee"],
-  "931": ["Clarksville", "Tennessee"],
+  "423": ["Chattanooga", "Tennessee", "America/New_York"],
+  "615": ["Nashville", "Tennessee", "America/Chicago"],
+  "629": ["Nashville", "Tennessee", "America/Chicago"],
+  "731": ["Jackson", "Tennessee", "America/Chicago"],
+  "865": ["Knoxville", "Tennessee", "America/New_York"],
+  "901": ["Memphis", "Tennessee", "America/Chicago"],
+  "931": ["Clarksville", "Tennessee", "America/Chicago"],
 
   /* ---------- Texas ---------- */
-  "210": ["San Antonio", "Texas"],"214": ["Dallas", "Texas"],"254": ["Waco", "Texas"],"281": ["Houston", "Texas"],
-  "325": ["Abilene", "Texas"],"346": ["Houston", "Texas"],"361": ["Corpus Christi", "Texas"],
-  "409": ["Beaumont", "Texas"],"430": ["Tyler", "Texas"],"432": ["Midland", "Texas"],"469": ["Dallas", "Texas"],
-  "512": ["Austin", "Texas"],"682": ["Fort Worth", "Texas"],"713": ["Houston", "Texas"],"726": ["San Antonio", "Texas"],
-  "737": ["Austin", "Texas"],"806": ["Amarillo", "Texas"],"817": ["Fort Worth", "Texas"],
-  "830": ["New Braunfels", "Texas"],"832": ["Houston", "Texas"],"903": ["Tyler", "Texas"],
-  "915": ["El Paso", "Texas"],"936": ["Conroe", "Texas"],"940": ["Wichita Falls", "Texas"],
-  "956": ["McAllen", "Texas"],"972": ["Dallas", "Texas"],"979": ["College Station", "Texas"],
+  "210": ["San Antonio", "Texas", "America/Chicago"],
+  "214": ["Dallas", "Texas", "America/Chicago"],
+  "254": ["Waco", "Texas", "America/Chicago"],
+  "281": ["Houston", "Texas", "America/Chicago"],
+  "325": ["Abilene", "Texas", "America/Chicago"],
+  "346": ["Houston", "Texas", "America/Chicago"],
+  "361": ["Corpus Christi", "Texas", "America/Chicago"],
+  "409": ["Beaumont", "Texas", "America/Chicago"],
+  "430": ["Tyler", "Texas", "America/Chicago"],
+  "432": ["Midland", "Texas", "America/Chicago"],
+  "469": ["Dallas", "Texas", "America/Chicago"],
+  "512": ["Austin", "Texas", "America/Chicago"],
+  "682": ["Fort Worth", "Texas", "America/Chicago"],
+  "713": ["Houston", "Texas", "America/Chicago"],
+  "726": ["San Antonio", "Texas", "America/Chicago"],
+  "737": ["Austin", "Texas", "America/Chicago"],
+  "806": ["Amarillo", "Texas", "America/Chicago"],
+  "817": ["Fort Worth", "Texas", "America/Chicago"],
+  "830": ["New Braunfels", "Texas", "America/Chicago"],
+  "832": ["Houston", "Texas", "America/Chicago"],
+  "903": ["Tyler", "Texas", "America/Chicago"],
+  "915": ["El Paso", "Texas", "America/Denver"],
+  "936": ["Conroe", "Texas", "America/Chicago"],
+  "940": ["Wichita Falls", "Texas", "America/Chicago"],
+  "956": ["McAllen", "Texas", "America/Chicago"],
+  "972": ["Dallas", "Texas", "America/Chicago"],
+  "979": ["College Station", "Texas", "America/Chicago"],
 
   /* ---------- Utah ---------- */
-  "385": ["Salt Lake City", "Utah"],"435": ["St. George", "Utah"],"801": ["Salt Lake City", "Utah"],
+  "385": ["Salt Lake City", "Utah", "America/Denver"],
+  "435": ["St. George", "Utah", "America/Denver"],
+  "801": ["Salt Lake City", "Utah", "America/Denver"],
 
   /* ---------- Vermont ---------- */
-  "802": ["Burlington", "Vermont"],
+  "802": ["Burlington", "Vermont", "America/New_York"],
 
   /* ---------- Virginia ---------- */
-  "276": ["Bristol", "Virginia"],"434": ["Lynchburg", "Virginia"],"540": ["Roanoke", "Virginia"],
-  "571": ["Arlington", "Virginia"],"703": ["Arlington", "Virginia"],"757": ["Virginia Beach", "Virginia"],
-  "804": ["Richmond", "Virginia"],
+  "276": ["Bristol", "Virginia", "America/New_York"],
+  "434": ["Lynchburg", "Virginia", "America/New_York"],
+  "540": ["Roanoke", "Virginia", "America/New_York"],
+  "571": ["Arlington", "Virginia", "America/New_York"],
+  "703": ["Arlington", "Virginia", "America/New_York"],
+  "757": ["Virginia Beach", "Virginia", "America/New_York"],
+  "804": ["Richmond", "Virginia", "America/New_York"],
 
   /* ---------- Washington ---------- */
-  "206": ["Seattle", "Washington"],"253": ["Tacoma", "Washington"],"360": ["Vancouver", "Washington"],
-  "425": ["Everett", "Washington"],"509": ["Spokane", "Washington"],"564": ["Bellingham", "Washington"],
+  "206": ["Seattle", "Washington", "America/Los_Angeles"],
+  "253": ["Tacoma", "Washington", "America/Los_Angeles"],
+  "360": ["Vancouver", "Washington", "America/Los_Angeles"],
+  "425": ["Everett", "Washington", "America/Los_Angeles"],
+  "509": ["Spokane", "Washington", "America/Los_Angeles"],
+  "564": ["Bellingham", "Washington", "America/Los_Angeles"],
 
   /* ---------- West Virginia ---------- */
-  "304": ["Charleston", "West Virginia"],"681": ["Charleston", "West Virginia"],
+  "304": ["Charleston", "West Virginia", "America/New_York"],
+  "681": ["Charleston", "West Virginia", "America/New_York"],
 
   /* ---------- Wisconsin ---------- */
-  "262": ["Waukesha", "Wisconsin"],"274": ["Milwaukee", "Wisconsin"],"414": ["Milwaukee", "Wisconsin"],
-  "534": ["Eau Claire", "Wisconsin"],"608": ["Madison", "Wisconsin"],"715": ["Eau Claire", "Wisconsin"],
-  "920": ["Green Bay", "Wisconsin"],
+  "262": ["Waukesha", "Wisconsin", "America/Chicago"],
+  "274": ["Milwaukee", "Wisconsin", "America/Chicago"],
+  "414": ["Milwaukee", "Wisconsin", "America/Chicago"],
+  "534": ["Eau Claire", "Wisconsin", "America/Chicago"],
+  "608": ["Madison", "Wisconsin", "America/Chicago"],
+  "715": ["Eau Claire", "Wisconsin", "America/Chicago"],
+  "920": ["Green Bay", "Wisconsin", "America/Chicago"],
 
   /* ---------- Wyoming ---------- */
-  "307": ["Cheyenne", "Wyoming"],
+  "307": ["Cheyenne", "Wyoming", "America/Denver"],
 };
 
 
@@ -250,13 +450,12 @@ app.post('/inbound-call', async (req, res) => {
     return res.status(400).json({ error: 'Malformed request: no payload.' })
   }
   const { from_number: from, to_number: to, agent_id: id } = payload;
-  const hostZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
   const areaCode  = from.slice(2, 5);
-  const [city, state]      = areaCodeMap[areaCode] ?? 'Unknown';
-  const now       = new Date();
-  const day       = now.getDay();  
+  const [city, state, hostZone]      = areaCodeMap[areaCode] ?? 'Unknown';
+  const now = new Date();
+  const day = now.getDay();  
 
   const est   = new Date(
     new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
@@ -303,8 +502,7 @@ app.post('/inbound-call', (req, res) => {
 
   const {from_number: from, to_number: to, agent_id: id} = payload;
   const areaCode = from.slice(2, 5);
-  const [city, state]      = areaCodeMap[areaCode] ?? 'Unknown';
-  const hostZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const [city, state, hostZone]      = areaCodeMap[areaCode] ?? 'Unknown';
 
   const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
   console.log(`Local time in ${hostZone}:`, localString);
