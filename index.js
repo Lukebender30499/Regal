@@ -451,12 +451,11 @@ app.post('/inbound-call', async (req, res) => {
   }
   const { from_number: from, to_number: to, agent_id: id } = payload;
 
-  const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
   const areaCode  = from.slice(2, 5);
   const [city, state, hostZone] = areaCodeMap[areaCode] ?? 'Unknown';
   const now = new Date();
   const day = now.getDay();  
-
+  const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
   const est   = new Date(
     new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
   );
@@ -503,7 +502,7 @@ app.post('/inbound-call', (req, res) => {
   const {from_number: from, to_number: to, agent_id: id} = payload;
   const areaCode = from.slice(2, 5);
   const [city, state, hostZone] = areaCodeMap[areaCode] ?? 'Unknown';
-
+  const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
   const est   = new Date(
     new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
   );
