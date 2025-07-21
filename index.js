@@ -9,6 +9,50 @@ const PORT = process.env.PORT || 3000;   // Render injects its own PORT
 app.use(cors());          // allow cross-origin calls
 app.use(express.json());  // parse incoming JSON bodies
 
+// provider’s production webhook
+app.post('/inbound-call', async (req, res) => {
+  console.log('📥 FULL WEBHOOK BODY:', JSON.stringify(req.body, null, 2));
+  const payload = req.body.call_inbound || req.body.call;
+
+  // bail out immediately if we didn’t even get a payload
+  if (!payload) {
+    console.error('No payload at either call_inbound or call!', req.body)
+    return res.status(400).json({ error: 'Malformed request: no payload.' })
+  }
+  const { from_number: from, to_number: to, agent_id: id } = payload;
+
+  const areaCode  = from.slice(2, 5);
+  const [city, state, hostZone] = areaCodeMap[areaCode] ?? 'Unknown';
+  const now = new Date();
+  const day = now.getDay();  
+  const est   = new Date(
+    new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
+  );
+  const hostDate   = new Date(
+    new Date().toLocaleString('en-US', { timeZone: hostZone })
+  );
+  const hour  = est.getHours();
+  const local_hour = hostDate.getHours();
+  const isEarly = local_hour <= 9;
+  const isLate = local_hour >= 20;
+  const isWeekday = day >= 1 && day <= 5;
+  const isOpen = (hour >= 9 && hour <= 20) && isWeekday;
+  console.log('🔍 debug inbound-call vars →', { from, to, id, city, state, hour, hostZone, isOpen, isEarly, isLate, isWeekday });
+  return res.json({
+    dynamic_variables: {      id,
+                              areaCode,
+                              local_hour,
+                              from,
+                              to,
+                              city,
+                              state,
+                              isOpen: isOpen ? 'yes' : 'no',
+                              isEarly: isEarly ? 'yes' : 'no',
+                              isLate: isLate ? 'yes' : 'no',
+                              isWeekday: isWeekday ? 'yes' : 'no' }
+  });
+});
+
 // --------------  data ---------------------
 const areaCodeMap = {
   /* ---------- Alabama ---------- */
@@ -437,110 +481,6 @@ const areaCodeMap = {
   /* ---------- Wyoming ---------- */
   "307": ["Cheyenne", "Wyoming", "America/Denver"],
 };
-
-
-// provider’s production webhook
-app.post('/inbound-call', async (req, res) => {
-  console.log('📥 FULL WEBHOOK BODY:', JSON.stringify(req.body, null, 2));
-  const payload = req.body.call_inbound || req.body.call;
-
-  // bail out immediately if we didn’t even get a payload
-  if (!payload) {
-    console.error('No payload at either call_inbound or call!', req.body)
-    return res.status(400).json({ error: 'Malformed request: no payload.' })
-  }
-  const { from_number: from, to_number: to, agent_id: id } = payload;
-
-  const areaCode  = from.slice(2, 5);
-  const [city, state, hostZone] = areaCodeMap[areaCode] ?? 'Unknown';
-  const now = new Date();
-  const day = now.getDay();  
-  const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
-  const est   = new Date(
-    new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
-  );
-  const hostDate   = new Date(
-    new Date().toLocaleString('en-US', { timeZone: hostZone })
-  );
-  const hour  = est.getHours();
-  const local_hour = hostDate.getHours();
-  const isEarly = local_hour <= 9;
-  const isLate = local_hour >= 20;
-  const isWeekday = day >= 1 && day <= 5;
-  const isOpen = (hour >= 9 && hour <= 20) && isWeekday;
-  console.log('🔍 debug inbound-call vars →', { from, to, id, city, state, hour, hostZone, isOpen, isEarly, isLate, isWeekday });
-  const customer_number = "4";
-  return res.json({
-    dynamic_variables: {      id,
-                              areaCode,
-                              local_hour,
-                              customer_number: String(customer_number),
-                              to,
-                              city,
-                              state,
-                              isOpen: isOpen ? 'yes' : 'no',
-                              isEarly: isEarly ? 'yes' : 'no',
-                              isLate: isLate ? 'yes' : 'no',
-                              isWeekday: isWeekday ? 'yes' : 'no' }
-  });
-});
-
-app.post('/inbound-call', (req, res) => {
-  app.post('/inbound-call', (req, res) => {
-
-
-  const payload =
-        req.body.call_inbound ??
-        req.body.dynamic_variables ??
-        req.body;
-
-  if (!payload || typeof payload !== 'object') {
-    console.error('No recognizable payload:', req.body);
-    return res.status(400).json({ error: 'Unrecognized payload shape.' });
-  }
-
-  const {from_number: from, to_number: to, agent_id: id} = payload;
-  const areaCode = from.slice(2, 5);
-  const [city, state, hostZone] = areaCodeMap[areaCode] ?? 'Unknown';
-  const localString = new Date().toLocaleString("en-US", { timeZone: hostZone });
-  const est   = new Date(
-    new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
-  );
-  const hostDate   = new Date(
-    new Date().toLocaleString('en-US', { timeZone: hostZone })
-  );
-  const hour  = est.getHours();
-  const local_hour = hostDate.getHours();
-  const isEarly = local_hour <= 9;
-  const isLate = local_hour >= 20;
-  const day = now.getDay();
-  const isWeekday = day >= 1 && day <= 5;
-  const isOpen = (hour >= 9 && hour <= 20) && isWeekday;
-
-  // 👀 see what you got
-  console.table({ from, to, id, city, state, hour, isOpen, isEarly, isLate, isWeekday });
-
-  const dynamic_variables = { id,
-                              from,
-                              to,
-                              city,
-                              state,
-                              isOpen: isOpen ? 'yes' : 'no',
-                              isEarly: isEarly ? 'yes' : 'no',
-                              isLate: isLate ? 'yes' : 'no',
-                              isWeekday: isWeekday ? 'yes' : 'no' };
-
-  // In dev, send the debug data back too
-  if (process.env.NODE_ENV !== 'production') {
-    return res.json({ dynamic_variables, debug: { from, areaCode, city, state, hour, isOpen, isEarly, isLate, isWeekday } });
-  }
-  return res.json({ dynamic_variables });
-});});
-
-app.post('/do_not_personalize', (req, res) => { return "yes";})
-
-
-
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server listening on port ${PORT}`);
